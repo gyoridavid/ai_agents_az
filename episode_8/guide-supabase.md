@@ -37,9 +37,11 @@ Once ready, hit save.
 ## Creating the storage bucket
 
 Click on `Storage` from the menu.
+
 <img width="200" alt="Screenshot 2025-05-09 at 9 00 15 AM" src="https://github.com/user-attachments/assets/e7cbd532-b7bd-4404-a169-2965932be24e" />
 
 Click on `New bucket`.
+
 <img width="242" alt="Screenshot 2025-05-09 at 9 00 21 AM" src="https://github.com/user-attachments/assets/9deca74e-1798-4733-8593-0b5593857ab4" />
 
 Name your bucket `instagram-images` or anything that fits the naming criteria - but remember the name as you'll need to set it in n8n.
