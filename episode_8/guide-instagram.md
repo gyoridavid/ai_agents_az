@@ -120,7 +120,9 @@ From the tools menu, select the `Graph API Explorer`
 
 <img width="877" alt="image" src="https://github.com/user-attachments/assets/006a40a7-894a-4bd0-9483-0d495b77206f" />
 
-You'll see this interface below. <img width="541" alt="image" src="https://github.com/user-attachments/assets/414ece47-2f1d-4d08-9998-ada85ffb065f" />
+You'll see this interface below. 
+
+<img width="541" alt="image" src="https://github.com/user-attachments/assets/414ece47-2f1d-4d08-9998-ada85ffb065f" />
 
 1. Make sure the Meta app is the one you just created
 2. In the permissions panel, add the following permissions
@@ -160,8 +162,11 @@ You'll see this interface below. <img width="541" alt="image" src="https://githu
 
 7. (optional) you can verify the expiration of the token, if you paste it to the [Facebook token debugger tool](https://developers.facebook.com/tools/debug/accesstoken).
 
+8. (optional) you can also get the Instagram Business Account's id, if you click on the id of the page in the Graph API explorer, and add `?fields=instagram_business_account` after the id, then click `Submit`
 
-If you did everything above, you'll have two things
+<img width="766" alt="image" src="https://github.com/user-attachments/assets/ac0cb186-8496-4c22-a249-d555dad1f870" />
 
-1. A page token, that won't expire to manage your Instagram account
-2. The Instagram account id
+**If you did everything above, you'll have two things**
+
+1. A page token, that won't expire to manage your Instagram account. You will use the page token to setup the Facebook Graph node in n8n.
+2. The Instagram account id which you'll need to set in the `Configure` node in the n8n workflow
