@@ -123,27 +123,45 @@ From the tools menu, select the `Graph API Explorer`
 You'll see this interface below. <img width="541" alt="image" src="https://github.com/user-attachments/assets/414ece47-2f1d-4d08-9998-ada85ffb065f" />
 
 1. Make sure the Meta app is the one you just created
-2. In the permissions panel, add the `instagram_basic` and `instagram_content_publish`
-3. In the `User of Page` section, you need to select `Get Page Access Token`
+2. In the permissions panel, add the following permissions
 
-<img width="533" alt="image" src="https://github.com/user-attachments/assets/51433f7a-a1a0-40e8-971a-be1f7064ebd6" />
+- `pages_show_list`
+- `business_management`
+- `instagram_basic`
+- `instagram_content_publish`
+- `pages_read_engagement`
 
-You will be prompted to authenticate with your Facebook account. In the process, select the previously created Facebook page.
+3. Click on `Generate Access Token`
 
-<img width="566" alt="Screenshot 2025-05-09 at 10 03 39 AM" src="https://github.com/user-attachments/assets/edffac2a-5e25-4f95-94d2-90b7270de8ad" />
+4. You'll be prompted to select the Facebook page you give access to, the business account and the Instagram account. Select all of them. During the process, take a not of the **Instagram account id** you are connecting, you'll need that later.
 
-<img width="567" alt="Screenshot 2025-05-09 at 10 03 59 AM" src="https://github.com/user-attachments/assets/e2a613c8-21aa-45ce-9757-7aead8808759" />
+<table>
+  <tr>
+    <td>
+      <img width="564" alt="Screenshot 2025-05-09 at 11 07 22 AM" src="https://github.com/user-attachments/assets/6b77415e-1ca2-47f0-b046-974fd391c90a" />
+    </td>
+    <td>
+      <img width="562" alt="Screenshot 2025-05-09 at 11 07 27 AM" src="https://github.com/user-attachments/assets/353b9973-426b-4034-b5fc-e77840ca0d18" />
+    </td>
+    <td>
+      <img width="562" alt="Screenshot 2025-05-09 at 11 08 35 AM" src="https://github.com/user-attachments/assets/58132694-1376-4c40-9d20-61cb8fdb9df5" />
+    </td>
+    <td>
+      <img width="562" alt="Screenshot 2025-05-09 at 11 08 58 AM" src="https://github.com/user-attachments/assets/c2676755-f12f-49d6-9a92-49ea688fc832" />
+    </td>
+  </tr>
+</table>
+
+5. Copy the access token, and head to the [Facebook token debugger tool](https://developers.facebook.com/tools/debug/accesstoken) and paste in the access token, and click `debug`. Scroll to the very bottom of the page, and click on `Extend Access Token`. Copy the long-lived access token.
+
+6. Go back to the `Graph API Explorer` and paste the access token to the access token field and add `me/accounts` to the graph path and click `Submit`. In the results, you'll find field `access_token` that contains the long-lived page access token that will never expire. Copy that.
+
+<img width="693" alt="image" src="https://github.com/user-attachments/assets/0e1bd821-5c27-4c9a-b14e-eeed9c17850f" />
+
+7. (optional) you can verify the expiration of the token, if you paste it to the [Facebook token debugger tool](https://developers.facebook.com/tools/debug/accesstoken).
 
 
+If you did everything above, you'll have two things
 
-Now, this is important: once you are done, you need to click on the blue `Generate Access Token` and re-authenticate with your Facebook account.
-
-This time, you'll have an extra step included in the process, you can select the Instagram account that is connected to the Facebook page you've selected.
-
-<img width="568" alt="Screenshot 2025-05-09 at 10 06 02 AM" src="https://github.com/user-attachments/assets/576cf8ed-3e9f-44bf-a966-1e1c03f133db" />
-
-
-Finish this step, and copy the access token.
-
-Head to the [Facebook token debugger tool](https://developers.facebook.com/tools/debug/accesstoken) and paste in the access token, and click `debug`.
-
+1. A page token, that won't expire to manage your Instagram account
+2. The Instagram account id
