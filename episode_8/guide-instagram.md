@@ -93,16 +93,57 @@ You are done.
 
 Head to [https://developers.facebook.com/apps](https://developers.facebook.com/apps) and click on `Create app`
 
-<img width="973" alt="Screenshot 2025-04-28 at 2 18 42 PM" src="https://github.com/user-attachments/assets/60e0b931-0b5b-4558-9559-b0668e474504" />
-<img width="1536" alt="Screenshot 2025-04-28 at 2 16 45 PM" src="https://github.com/user-attachments/assets/a10295a3-1d0e-452e-978b-4cf66ce62205" />
-<img width="1039" alt="Screenshot 2025-04-28 at 2 16 29 PM" src="https://github.com/user-attachments/assets/37b25c52-683b-4e33-b1f4-075a98a51979" />
-<img width="1050" alt="Screenshot 2025-04-28 at 2 16 23 PM" src="https://github.com/user-attachments/assets/4aa73ed4-183d-4854-9db8-08761978b459" />
-<img width="1030" alt="Screenshot 2025-04-28 at 2 15 58 PM" src="https://github.com/user-attachments/assets/cc0a4ffa-f05a-4d90-b79c-92d18b1cdec3" />
-<img width="1032" alt="Screenshot 2025-04-28 at 2 15 27 PM" src="https://github.com/user-attachments/assets/7499e27e-297b-490c-b20c-9a9061516a2b" />
-<img width="1038" alt="Screenshot 2025-04-28 at 2 15 14 PM" src="https://github.com/user-attachments/assets/7722d99f-5797-4840-809d-dfc400697c20" />
-<img width="1723" alt="Screenshot 2025-04-28 at 2 15 07 PM" src="https://github.com/user-attachments/assets/b5fa24c0-981a-4a18-af68-c3656d2f0ec5" />
+<img width="1027" alt="image" src="https://github.com/user-attachments/assets/ca5c79b9-974a-4c55-8f88-6def8c1b98d1" />
+
+Select the `Other` use case and hit `Next`.
+
+<img width="1033" alt="image" src="https://github.com/user-attachments/assets/31f296bd-3b47-432b-9037-7974e821a311" />
+
+Select `Business` app type.
+
+<img width="818" alt="image" src="https://github.com/user-attachments/assets/2ab06dd1-33ba-4d87-8365-3637c8327877" />
+
+Review, and click on `Create app`
+
+<img width="815" alt="image" src="https://github.com/user-attachments/assets/c8cc8e1d-c006-428a-9bfa-8cc78a2932c9" />
+
+Add the Instagram product to your app.
+
+<img width="1008" alt="image" src="https://github.com/user-attachments/assets/4186f90b-b619-4c1c-9ea8-bfc5294eaeb4" />
+
+You don't need to configure it, just leave it as it is. 
 
 
 ### 4. Create an access token
 
+From the tools menu, select the `Graph API Explorer`
+
+<img width="877" alt="image" src="https://github.com/user-attachments/assets/006a40a7-894a-4bd0-9483-0d495b77206f" />
+
+You'll see this interface below. <img width="541" alt="image" src="https://github.com/user-attachments/assets/414ece47-2f1d-4d08-9998-ada85ffb065f" />
+
+1. Make sure the Meta app is the one you just created
+2. In the permissions panel, add the `instagram_basic` and `instagram_content_publish`
+3. In the `User of Page` section, you need to select `Get Page Access Token`
+
+<img width="533" alt="image" src="https://github.com/user-attachments/assets/51433f7a-a1a0-40e8-971a-be1f7064ebd6" />
+
+You will be prompted to authenticate with your Facebook account. In the process, select the previously created Facebook page.
+
+<img width="566" alt="Screenshot 2025-05-09 at 10 03 39 AM" src="https://github.com/user-attachments/assets/edffac2a-5e25-4f95-94d2-90b7270de8ad" />
+
+<img width="567" alt="Screenshot 2025-05-09 at 10 03 59 AM" src="https://github.com/user-attachments/assets/e2a613c8-21aa-45ce-9757-7aead8808759" />
+
+
+
+Now, this is important: once you are done, you need to click on the blue `Generate Access Token` and re-authenticate with your Facebook account.
+
+This time, you'll have an extra step included in the process, you can select the Instagram account that is connected to the Facebook page you've selected.
+
+<img width="568" alt="Screenshot 2025-05-09 at 10 06 02 AM" src="https://github.com/user-attachments/assets/576cf8ed-3e9f-44bf-a966-1e1c03f133db" />
+
+
+Finish this step, and copy the access token.
+
+Head to the [Facebook token debugger tool](https://developers.facebook.com/tools/debug/accesstoken) and paste in the access token, and click `debug`.
 
