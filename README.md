@@ -11,6 +11,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 5: Creating a blog writing system using deep research](episode_5)
 - [Episode 6: Lead generation with X-Ray search and LinkedIn](episode_6)
 - [Episode 7: Creating Youtube short videos using our custom MCP server](episode_7)
+- [Episode 8: Creating an AI influencer on Instagram using n8n](episode_8)
 
 ## MCP servers
 
