@@ -19,8 +19,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3560,
-        60
+        5800,
+        -640
       ],
       "id": "a00fb760-ee18-4192-b8ab-9e829ea68007",
       "name": "Code1"
@@ -33,8 +33,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3560,
-        460
+        4520,
+        -260
       ],
       "id": "e70b11e2-76ab-40c9-97ec-b8faf57b8a99",
       "name": "Split Out"
@@ -60,8 +60,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3780,
-        460
+        4720,
+        -260
       ],
       "id": "0519d9c2-1bd8-48fd-a523-e5a852311ae6",
       "name": "HTML5"
@@ -73,8 +73,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4000,
-        460
+        4980,
+        -220
       ],
       "id": "1fd7e856-1782-465a-a0ed-b86a47394ab8",
       "name": "Code2"
@@ -87,8 +87,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3540,
-        660
+        4480,
+        60
       ],
       "id": "fee9ab43-7998-4dfc-a0d1-6513bbef0aae",
       "name": "Split Out1"
@@ -120,8 +120,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3760,
-        660
+        4860,
+        100
       ],
       "id": "52fb7c68-434c-4efc-a671-7f84b2c79c4e",
       "name": "HTML7"
@@ -135,8 +135,8 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        3980,
-        660
+        5200,
+        120
       ],
       "id": "f8d59b3b-ff80-4dfc-96b3-be4781481746",
       "name": "Aggregate"
@@ -149,8 +149,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3520,
-        880
+        4460,
+        460
       ],
       "id": "f89f08c4-0a1b-4cba-8219-d5d4800d67f3",
       "name": "Split Out2"
@@ -187,8 +187,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3740,
-        880
+        4740,
+        460
       ],
       "id": "0a28de0a-eaa1-41ce-a271-3e8e155035e6",
       "name": "HTML9"
@@ -200,8 +200,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3960,
-        880
+        5080,
+        460
       ],
       "id": "7041f6bd-ff5b-465b-88bb-a88bafc9d976",
       "name": "Code3"
@@ -233,8 +233,8 @@
       "type": "n8n-nodes-base.filter",
       "typeVersion": 2.2,
       "position": [
-        4180,
-        880
+        5360,
+        460
       ],
       "id": "ba6385f9-b136-4439-8106-904484a13235",
       "name": "Filter1"
@@ -248,8 +248,8 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        4400,
-        880
+        5620,
+        400
       ],
       "id": "cb936423-3206-468c-a9b9-7e837b773fc7",
       "name": "Aggregate1"
@@ -263,8 +263,8 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        3980,
-        1100
+        5180,
+        720
       ],
       "id": "94276571-4e9a-44c5-b9d7-9781a67729e6",
       "name": "Aggregate2"
@@ -277,34 +277,11 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3540,
+        4640,
         1100
       ],
       "id": "52d74478-0b0a-4999-85a1-1e24e78576a0",
       "name": "Split Out3"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "50bff6d4-3e6f-4104-b345-62b84a818ae7",
-              "name": "products",
-              "value": "={{ $json.products }}",
-              "type": "array"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        4400,
-        1160
-      ],
-      "id": "cd026b52-214c-4abc-8ce1-6a907c55570f",
-      "name": "Edit Fields3"
     },
     {
       "parameters": {
@@ -314,7 +291,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        3540,
+        4640,
         1500
       ],
       "id": "c135cc5d-7e08-4ea1-b2ba-689e46296653",
@@ -329,34 +306,11 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        3980,
+        5300,
         1500
       ],
       "id": "ad9aa117-74cb-441c-9c98-4c35a1dfce90",
       "name": "Aggregate4"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "c2149253-32cd-43ce-82e3-815832fd3042",
-              "name": "affiliate_pages",
-              "value": "={{ $json.affiliate_pages }}",
-              "type": "array"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        4400,
-        1500
-      ],
-      "id": "bf76022d-e1ab-4494-8e8b-7c6a66af875b",
-      "name": "Edit Fields6"
     },
     {
       "parameters": {
@@ -368,8 +322,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.1,
       "position": [
-        5040,
-        480
+        6360,
+        240
       ],
       "id": "7302c508-591a-4387-a0e6-e141d62d29bc",
       "name": "Merge"
@@ -382,8 +336,8 @@
       "type": "n8n-nodes-base.aggregate",
       "typeVersion": 1,
       "position": [
-        5300,
-        560
+        6580,
+        320
       ],
       "id": "20ad6cdc-2f56-4db9-b9e0-cfdb77a899da",
       "name": "Aggregate3"
@@ -400,7 +354,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        6140,
+        7460,
         1080
       ],
       "id": "c443eb58-0cb7-4d88-b66c-a4c9bee9cda4",
@@ -420,7 +374,7 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        6320,
+        7640,
         1080
       ],
       "id": "d3c706de-2ab5-4ec5-8403-769c9eab6d81",
@@ -523,7 +477,8 @@
         -20
       ],
       "id": "30c86e8b-64bb-4061-b635-77aa1a0f6f3a",
-      "name": "Get job board RSS feed"
+      "name": "Get job board RSS feed",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -537,7 +492,8 @@
         0
       ],
       "id": "f43e9074-6d23-4fa9-8e80-e92dec65777a",
-      "name": "Scrape the job ad"
+      "name": "Scrape the job ad",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -594,7 +550,8 @@
         500
       ],
       "id": "ef1249f4-60ed-42c1-a481-5983cc67885f",
-      "name": "Google X-Ray Search"
+      "name": "Google X-Ray Search",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -663,7 +620,8 @@
         480
       ],
       "id": "fde13240-b6a7-4c25-b2a4-cddb3a77cbb5",
-      "name": "Scrape LinkedIn"
+      "name": "Scrape LinkedIn",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -756,8 +714,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3340,
-        60
+        3660,
+        -640
       ],
       "id": "c5c1cc8e-62b2-47fb-8214-9136f0a93d02",
       "name": "Extract info"
@@ -785,8 +743,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3340,
-        460
+        3660,
+        -220
       ],
       "id": "11abc9ee-1989-474b-b3c5-c51e0d1e108a",
       "name": "Extract about us"
@@ -810,8 +768,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3320,
-        660
+        3440,
+        60
       ],
       "id": "9761d0bd-0525-4897-a217-20b95acba1c4",
       "name": "Extract employees"
@@ -834,8 +792,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3700,
-        240
+        3660,
+        -420
       ],
       "id": "65a1d070-fdb4-4ed2-8364-f9a7a0a308e1",
       "name": "Extract locations"
@@ -859,8 +817,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3300,
-        880
+        3420,
+        460
       ],
       "id": "79dd423a-294e-43b1-b1a8-87a7cd2f59c5",
       "name": "Extract updates"
@@ -893,7 +851,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3300,
+        3740,
         1120
       ],
       "id": "e9b72a69-5c29-4490-a3c0-6d94eb9fea29",
@@ -927,7 +885,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3300,
+        3740,
         1520
       ],
       "id": "5ac34b71-37f3-48b2-9b5d-18e5aef13ef5",
@@ -950,7 +908,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3540,
+        4640,
         1720
       ],
       "id": "4e3a74a8-a29f-453c-975e-6a0d232c18b4",
@@ -973,7 +931,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3540,
+        4640,
         1280
       ],
       "id": "de21f912-2ff1-412f-aeb7-e8b93d2f4d2a",
@@ -1005,7 +963,7 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3760,
+        4860,
         1100
       ],
       "id": "55f1f71b-918a-4854-9ff9-7c7726903c17",
@@ -1034,7 +992,7 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        3760,
+        4860,
         1500
       ],
       "id": "fcae2015-c82c-489e-a9e1-3add7557bbf0",
@@ -1049,11 +1007,12 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        6140,
+        7460,
         860
       ],
       "id": "a062f98b-5fec-437c-a6ab-10fa4d52ed3b",
-      "name": "Summarize available data"
+      "name": "Summarize available data",
+      "retryOnFail": true
     },
     {
       "parameters": {
@@ -1065,7 +1024,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        6500,
+        7820,
         860
       ],
       "id": "dad2eba2-5994-4c19-8cc4-aef177988065",
@@ -1087,7 +1046,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        6020,
+        7360,
         520
       ],
       "id": "9d23305b-a4a2-4143-a0eb-5252209197b5",
@@ -1096,14 +1055,14 @@
     {
       "parameters": {
         "content": "# Extracting the data from LinkedIn\n\n## The CSS selectors could occasionally change - don't panic, very easy to fix, just replace them in the workflow. As of 25/4/10 these selectors are working",
-        "height": 2160,
-        "width": 3040
+        "height": 3040,
+        "width": 4460
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2560,
-        -220
+        2620,
+        -940
       ],
       "id": "19d4f56f-562f-4677-acf6-d1e5b16ae847",
       "name": "Sticky Note3"
@@ -1117,8 +1076,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        6620,
-        1780
+        7940,
+        1820
       ],
       "id": "d99561f4-f73f-4f34-993b-a130b1912d86",
       "name": "Sticky Note4"
@@ -1128,7 +1087,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        6780,
+        8100,
         2020
       ],
       "id": "bc8ed2e4-1ec8-4bb0-859d-2f59cd48a175",
@@ -1223,6 +1182,234 @@
       ],
       "id": "cf415334-62c2-492c-9be7-e8f621533859",
       "name": "Extract location data1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8562b688-864d-47a2-9b04-08dffc8040fe",
+              "leftValue": "={{ $json.locations }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5420,
+        -460
+      ],
+      "id": "26f7fff1-2421-42ef-bfbc-d1988a360cdf",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b94e6f5d-bbed-4b6b-b3f1-b23ff2fe5f16",
+              "name": "locations",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5660,
+        -380
+      ],
+      "id": "dc71f58f-a11c-4943-ad32-e58eab525695",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "17e760be-a45a-43e1-999f-18ac321dcdde",
+              "leftValue": "={{ $json.definitions }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4120,
+        -220
+      ],
+      "id": "2e2c4540-b7e7-49b0-9f72-70eb544f9f1a",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "905a9082-fd1e-4961-acdd-9233a3e15aa0",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5180,
+        -100
+      ],
+      "id": "4b79a417-9542-4454-81b8-fbe610a523a1",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2313cbcb-a3cc-4bd2-8d02-cad37db9473f",
+              "leftValue": "={{ $json.employees }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3660,
+        60
+      ],
+      "id": "1f1976dc-2a37-4f9f-861b-8d9cf0861bb8",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e16c3b2-650c-4a58-b5fd-d138af9775ce",
+              "name": "employees",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5480,
+        240
+      ],
+      "id": "00f4fefc-f037-43c5-97a9-1d7967f9dccb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9839990c-6444-433b-8dd9-42c1b264be1e",
+              "leftValue": "={{ $json.updates }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3840,
+        620
+      ],
+      "id": "4a23d646-fd12-4a69-9977-11efa1e73456",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "98037fb5-6297-4970-810f-626219a27964",
+              "name": "updates",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4400,
+        700
+      ],
+      "id": "0bf89497-b0b6-4023-9a0d-245ba1c8165a",
+      "name": "Edit Fields2"
     }
   ],
   "pinData": {},
@@ -1385,9 +1572,9 @@
       "main": [
         [
           {
-            "node": "Edit Fields3",
+            "node": "Merge",
             "type": "main",
-            "index": 0
+            "index": 5
           }
         ]
       ]
@@ -1404,28 +1591,6 @@
       ]
     },
     "Aggregate4": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields6",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields3": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 5
-          }
-        ]
-      ]
-    },
-    "Edit Fields6": {
       "main": [
         [
           {
@@ -1643,7 +1808,7 @@
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "If2",
             "type": "main",
             "index": 0
           }
@@ -1654,7 +1819,7 @@
       "main": [
         [
           {
-            "node": "Split Out1",
+            "node": "If3",
             "type": "main",
             "index": 0
           }
@@ -1665,9 +1830,9 @@
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "If1",
             "type": "main",
-            "index": 1
+            "index": 0
           }
         ]
       ]
@@ -1676,7 +1841,7 @@
       "main": [
         [
           {
-            "node": "Split Out2",
+            "node": "If4",
             "type": "main",
             "index": 0
           }
@@ -1723,9 +1888,9 @@
       "main": [
         [
           {
-            "node": "Edit Fields6",
+            "node": "Merge",
             "type": "main",
-            "index": 0
+            "index": 6
           }
         ]
       ]
@@ -1734,9 +1899,9 @@
       "main": [
         [
           {
-            "node": "Edit Fields3",
+            "node": "Merge",
             "type": "main",
-            "index": 0
+            "index": 5
           }
         ]
       ]
@@ -1846,13 +2011,129 @@
           }
         ]
       ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1707d080-c030-4076-bf26-d85048958225",
+  "versionId": "e71d7fe8-deb8-4a90-88a5-46454d50bc8b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
