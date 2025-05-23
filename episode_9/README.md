@@ -10,7 +10,8 @@
 - [Setting up Supabase](guide-supabase.md)
 - [Starting up the server](guide-start-server.md)
 - [How to use the server?](guide-using-the-server.md)
+- [Kokoro voices](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md)
 
 ## Watch the video
 
-[![](https://img.youtube.com/vi/x7kEfmQrHqo/0.jpg)](https://www.youtube.com/watch?v=x7kEfmQrHqo)
+[![](https://img.youtube.com/vi/x7kEfmQrHqo/0.jpg)](https://www.youtube.com/watch?v=ttt9da4f1wM)
