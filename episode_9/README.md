@@ -9,6 +9,7 @@
 
 - [Setting up Supabase](guide-supabase.md)
 - [Starting up the server](guide-start-server.md)
+- [How to use the server?](guide-using-the-server.md)
 
 ## Watch the video
 
