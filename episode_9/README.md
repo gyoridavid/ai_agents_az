@@ -14,4 +14,4 @@
 
 ## Watch the video
 
-[![](https://img.youtube.com/vi/x7kEfmQrHqo/0.jpg)](https://www.youtube.com/watch?v=ttt9da4f1wM)
+[![Make $40k+ monthly with faceless revenge story videos - 100% free, offline n8n automation](https://img.youtube.com/vi/x7kEfmQrHqo/0.jpg)](https://www.youtube.com/watch?v=ttt9da4f1wM)
