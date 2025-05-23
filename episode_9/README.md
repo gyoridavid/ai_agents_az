@@ -11,6 +11,7 @@
 - [Starting up the server](guide-start-server.md)
 - [How to use the server?](guide-using-the-server.md)
 - [Kokoro voices](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md)
+- [Join the Discord server](https://discord.gg/G7FJVJQ6RE)
 
 ## Watch the video
 
