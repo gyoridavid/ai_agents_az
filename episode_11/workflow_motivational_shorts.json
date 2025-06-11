@@ -2595,6 +2595,22 @@
       ],
       "id": "0fc347ff-9520-4ecf-9f9a-b9b520d19abd",
       "name": "For each file"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about?w9)\n\n## Be part of a growing community and help us create more content like this",
+        "height": 260,
+        "width": 700,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        -2420
+      ],
+      "id": "ed678e2b-b3fa-4ec3-b7ec-fc523e24e840",
+      "name": "Sticky Note16"
     }
   ],
   "pinData": {},
@@ -3422,7 +3438,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2c22e8de-719a-47cf-b2fe-97635df56e5f",
+  "versionId": "eab4cc86-aecb-4174-91d2-737aef2bd019",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
