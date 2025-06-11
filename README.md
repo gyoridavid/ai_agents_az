@@ -18,7 +18,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 8: Creating an AI influencer on Instagram using n8n](episode_8)
 - [Episode 9: Create revenge story videos for YouTube](episode_9)
 - [Episode 10: n8n best practices](episode_10)
-- [Episode 11: Create motivational short stories for YouTube](episode_11)
+- [Episode 11: Create short (motivational) stories for YouTube and TikTok](episode_11)
 
 ## servers
 
