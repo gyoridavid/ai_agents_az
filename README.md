@@ -17,8 +17,11 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 7: Creating Youtube short videos using our custom MCP server](episode_7)
 - [Episode 8: Creating an AI influencer on Instagram using n8n](episode_8)
 - [Episode 9: Create revenge story videos for YouTube](episode_9)
+- [Episode 10: n8n best practices](episode_10)
+- [Episode 11: Create motivational short stories for YouTube](episode_11)
 
 ## servers
 
 - [Short video maker MCP/REST server](https://github.com/gyoridavid/short-video-maker)
 - [Narrated story creator REST/MCP server](https://hub.docker.com/r/gyoridavid/narrated-story-creator)
+- [AI Agents No-Code Tools](https://hub.docker.com/r/gyoridavid/ai-agents-no-code-tools)
