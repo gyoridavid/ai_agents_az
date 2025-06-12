@@ -854,7 +854,7 @@
     },
     {
       "parameters": {
-        "content": "# Pick your choice of LLM ⚠️",
+        "content": "# Pick your choice of LLM ⚠️\n### Make sure to delete the rest of the LLMs after selecting one",
         "height": 700,
         "width": 700,
         "color": 3
@@ -1386,8 +1386,8 @@
     },
     {
       "parameters": {
-        "content": "# How to set up this automation?\n\n## 1. Make a copy of the [Reddit Google Spreadsheet template](https://docs.google.com/spreadsheets/d/1W3BP1fxhmWqJGmhaYTflLnd7l0N1RaQUzXeI3Y5b7Fo/edit?usp=sharing) to your Google Drive\n## 2. Modify the Google Sheets nodes, select the one you just created\n## 3. Start the `AI Agents No-Code Tools` server\n## 4. Open the `Configure me` node, and setup the server url. You can also edit the subreddit, content type and art style if you want\n## 5. Create a free account on [Together AI](http://together.ai/), [create and API key](https://api.together.ai/settings/api-keys) and copy it\n## 6. Set up the `Generate AI Image` Node - create a new Bearer Auth credential and paste the API key from Together AI\n## 7. Set up the `Start YouTube upload` and `Upload video to YouTube` nodes - select/setup your YouTube credentials\n",
-        "height": 400,
+        "content": "# How to set up this automation?\n\n## Make sure to use n8n `1.97.1` or higher, lower versions could break the Google Sheet node\n\n## 1. Make a copy of the [Reddit Google Spreadsheet template](https://docs.google.com/spreadsheets/d/1W3BP1fxhmWqJGmhaYTflLnd7l0N1RaQUzXeI3Y5b7Fo/edit?usp=sharing) to your Google Drive\n## 2. Modify the Google Sheets nodes, select the one you just created\n## 3. Start the `AI Agents No-Code Tools` server\n## 4. Open the `Configure me` node, and setup the server url. You can also edit the subreddit, content type and art style if you want\n## 5. Create a free account on [Together AI](http://together.ai/), [create and API key](https://api.together.ai/settings/api-keys) and copy it\n## 6. Set up the `Generate AI Image` Node - create a new Bearer Auth credential and paste the API key from Together AI\n## 7. Set up the `Start YouTube upload` and `Upload video to YouTube` nodes - select/setup your YouTube credentials\n",
+        "height": 480,
         "width": 1640,
         "color": 6
       },
@@ -1395,7 +1395,7 @@
       "typeVersion": 1,
       "position": [
         2280,
-        -2560
+        -2640
       ],
       "id": "382b4677-edf5-4991-a988-462dc90e0ede",
       "name": "Sticky Note14"
@@ -1768,7 +1768,7 @@
             {
               "id": "7bbb518a-c4f1-49a5-9e72-3e9d939b131b",
               "name": "ai_agents_no_code_tools_url",
-              "value": "http://192.168.68.60:8000",
+              "value": "YOUR_SERVER_URL",
               "type": "string"
             },
             {
@@ -3432,13 +3432,18 @@
           }
         ]
       ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "eab4cc86-aecb-4174-91d2-737aef2bd019",
+  "versionId": "6080e7f4-f798-4831-968c-fbe1f83f1b19",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
