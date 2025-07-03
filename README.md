@@ -23,6 +23,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 13: Create AI videos with MiniMax Hailuo 2 and n8n](episode_13)
 - [Episode 14: Create AI videos with Seedance and n8n](episode_14)
 - [Episode 15: Generate AI startup ideas from Reddit](episode_15)
+- [Episode 16: Create AI poem videos with n8n for TikTok](episode_16)
 
 ## servers
 
