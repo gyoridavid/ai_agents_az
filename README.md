@@ -24,6 +24,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 14: Create AI videos with Seedance and n8n](episode_14)
 - [Episode 15: Generate AI startup ideas from Reddit](episode_15)
 - [Episode 16: Create AI poem videos with n8n for TikTok](episode_16)
+- [Episode 17: Create Shopify product videos with Seedance, ElevenLabs, Latentsync, Flux Kontext and n8n](episode_17)
 
 ## servers
 
