@@ -1,5 +1,5 @@
 {
-  "name": "My workflow 60",
+  "name": "Episode 18 Scary Stories TikTok final",
   "nodes": [
     {
       "parameters": {
@@ -1465,7 +1465,7 @@
     },
     {
       "parameters": {
-        "url": "https://github.com/gyoridavid/ai_agents_az/raw/refs/heads/episode-18/episode_18/bg_1.mp4",
+        "url": "https://github.com/gyoridavid/ai_agents_az/raw/refs/heads/main/episode_18/bg_1.mp4",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -2655,7 +2655,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "07d0cdc3-5acd-4833-8618-0f06cf6411d6",
+  "versionId": "2a6c6f71-034f-4ac8-81bc-b0f944d4e82a",
   "meta": {
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
   },
