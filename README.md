@@ -2,7 +2,7 @@
 
 In this repo, you can find the n8n templates we created for the episodes of [AI Agents A-Z](https://www.youtube.com/channel/UCloXqLhp_KGhHBe1kwaL2Tg).
 
-## [📚 Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about?ghm)
+## [📚 Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about)
 
 ### Be part of a growing community and help us create more content
 
@@ -25,9 +25,10 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 15: Generate AI startup ideas from Reddit](episode_15)
 - [Episode 16: Create AI poem videos with n8n for TikTok](episode_16)
 - [Episode 17: Create Shopify product videos with Seedance, ElevenLabs, Latentsync, Flux Kontext and n8n](episode_17)
+- [Episode 18: Scary story TikTok videos workflow](episode_18)
 
 ## servers
 
+- [AI Agents No-Code Tools](https://hub.docker.com/r/gyoridavid/ai-agents-no-code-tools)
 - [Short video maker MCP/REST server](https://github.com/gyoridavid/short-video-maker)
 - [Narrated story creator REST/MCP server](https://hub.docker.com/r/gyoridavid/narrated-story-creator)
-- [AI Agents No-Code Tools](https://hub.docker.com/r/gyoridavid/ai-agents-no-code-tools)
