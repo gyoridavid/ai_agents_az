@@ -25,7 +25,7 @@
           "parameters": [
             {
               "name": "model",
-              "value": "black-forest-labs/FLUX.1-schnell-free"
+              "value": "black-forest-labs/FLUX.1-schnell-Free"
             },
             {
               "name": "prompt",
@@ -2655,7 +2655,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b71003b1-7827-4a49-bcdc-64a4e677c314",
+  "versionId": "e47580c2-eda6-4996-a566-d21122aad982",
   "meta": {
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
   },
