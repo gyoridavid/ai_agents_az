@@ -2,9 +2,17 @@
 
 In this video, we show you how to use Modal’s serverless GPU infrastructure with n8n to do image generation with Flux Kontext Dev for free.
 
-## [📚 Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about)
-
-### Be part of a growing community and help us create more content like this
+<table>
+  <tr>
+    <td>
+      <a href="https://www.skool.com/ai-agents-az/about">📚 Join our Skool community for support, premium content and more!</a>
+      <p>Be part of a growing community and help us create more content like this</p>
+    </td>
+    <td>
+      <img width="548" height="596" alt="Screenshot 2025-07-29 at 3 23 33 PM" src="https://github.com/user-attachments/assets/d687b58d-92d0-44c0-93f8-7be23d3cb80c" />
+    </td>
+  </tr>
+</table>
 
 ## Free n8n JSON workflow
 
