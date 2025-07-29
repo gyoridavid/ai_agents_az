@@ -1,0 +1,287 @@
+{
+  "name": "Demo: flux kontext",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Image editing using self-hosted Flux Kontext dev on modal.com",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Image to edit",
+              "fieldType": "file",
+              "acceptFileTypes": ".jpg, .png, .jpeg",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Prompt",
+              "fieldType": "textarea",
+              "placeholder": "what should we change on the image?",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1140,
+        180
+      ],
+      "id": "e4a4d9d8-c467-40fc-8614-7289ab7571cf",
+      "name": "On form submission",
+      "webhookId": "8c88ede6-1b40-4136-b0f0-869b0f3b183a"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('On form submission').first()"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        180
+      ],
+      "id": "2dcf8472-347a-40ff-abc6-f796b248c702",
+      "name": "Relay the uploaded image"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b276d1d9-cb45-4f11-b415-a1b45ec1e1cf",
+              "name": "modal_server_url",
+              "value": "https://gyoridavid--flux-kontext-fastapi-fastapi-app.modal.run",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        180
+      ],
+      "id": "95ba07dc-bd58-492a-8b56-45e8aa37ba16",
+      "name": "Configure me"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7bbb518a-c4f1-49a5-9e72-3e9d939b131b",
+              "name": "SERVER_URL",
+              "value": "={{   ((u) => {   let s = u.trim();   if (!/^https?:\\/\\//i.test(s)) s = 'https://' + s;   const parts = s.split('/');   return parts[0] + '//' + parts[2]; })($json.modal_server_url)  }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -640,
+        180
+      ],
+      "id": "297dff50-3f0a-4949-a124-89d7c3e5b3ea",
+      "name": "Setup default"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup default').first().json.SERVER_URL }}/edit_image",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $('On form submission').first().json.Prompt }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "Image_to_edit"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        180
+      ],
+      "id": "f59acce7-35f9-45ed-93f9-fcd92be5f496",
+      "name": "Edit the image using Flux Kontext [dev]",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "DQ3YaYoVhWYXlWfi",
+          "name": "Modal.com flux kontext app"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "984cb62e-1e61-4cab-aacf-c65c49d8fb24",
+      "name": "Turn image to base64"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ca08e29-c4d6-4693-9829-5155d7433dd8",
+              "name": "mime",
+              "value": "={{ $('Edit the image using Flux Kontext [dev]').last().json['Image to edit'][0].mimetype }}",
+              "type": "string"
+            },
+            {
+              "id": "bd6e6fe8-8dc4-494e-8c19-ee16c60a3a31",
+              "name": "base64_data",
+              "value": "={{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        180,
+        180
+      ],
+      "id": "6c7aeb79-c0e9-4ca5-ac41-3f62dad3436a",
+      "name": "Map image data"
+    },
+    {
+      "parameters": {
+        "options": {
+          "formDescription": "=<h1>This is the edited image</h1>\n\n<img src=\"data:{{ $json.mime }};base64,{{ $json.base64_data }}\" style=\"max-width: 100%; height: auto;\" />\n",
+          "buttonLabel": "Close the form"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        420,
+        180
+      ],
+      "id": "c4c6c6e2-90e4-4fdc-925b-1dd46068e72c",
+      "name": "Present image",
+      "webhookId": "fd475be9-f768-4444-a32f-a582f81bddca"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configure me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relay the uploaded image": {
+      "main": [
+        [
+          {
+            "node": "Edit the image using Flux Kontext [dev]",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure me": {
+      "main": [
+        [
+          {
+            "node": "Setup default",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup default": {
+      "main": [
+        [
+          {
+            "node": "Relay the uploaded image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit the image using Flux Kontext [dev]": {
+      "main": [
+        [
+          {
+            "node": "Turn image to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Turn image to base64": {
+      "main": [
+        [
+          {
+            "node": "Map image data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map image data": {
+      "main": [
+        [
+          {
+            "node": "Present image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9ee36fd7-f6fa-441c-92d1-20c847a596c0",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "cyC4LG7SY2GsBjo7",
+  "tags": []
+}
