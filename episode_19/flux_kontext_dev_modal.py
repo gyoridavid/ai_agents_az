@@ -27,7 +27,7 @@ CACHE_DIR = Path("/cache")
 cache_volume = modal.Volume.from_name("hf-hub-cache", create_if_missing=True)
 volumes = {CACHE_DIR: cache_volume}
 
-secrets = [modal.Secret.from_name("huggingface-secret", required_keys=["HF_TOKEN"])]
+secrets = [modal.Secret.from_name("flux-app-secrets", required_keys=["HF_TOKEN"])]
 
 image = image.env(
     {
