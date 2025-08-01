@@ -345,6 +345,22 @@
       ],
       "id": "2270de9b-391c-48c7-b00e-77198113fc5f",
       "name": "Start the workflow with ComfyUI"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about?w9)\n\n## Get premium variations of this workflow!\n\n## Be part of a growing community and help us create more content like this",
+        "height": 300,
+        "width": 700,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        -640
+      ],
+      "id": "c86ea237-df17-4212-9439-e8c460d3b757",
+      "name": "Sticky Note16"
     }
   ],
   "pinData": {},
@@ -478,7 +494,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8aaad365-48d0-440e-95e3-89c0adf56409",
+  "versionId": "bd2cc8d4-31a5-4bdc-b4dc-7389d96e6adc",
   "meta": {
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
   },

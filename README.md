@@ -27,6 +27,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 17: Create Shopify product videos with Seedance, ElevenLabs, Latentsync, Flux Kontext and n8n](episode_17)
 - [Episode 18: Scary story TikTok videos workflow](episode_18)
 - [Episode 19: Run FLUX.1 Kontext [dev] with modal.com](episode_19)
+- [Episode 20: Use Wan 2.2, ComfyUI and n8n to generate videos for free](episode_20)
 
 ## servers
 
