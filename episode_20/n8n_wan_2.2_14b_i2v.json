@@ -1,0 +1,487 @@
+{
+  "name": "ComfyUI: wan 2.2 14b - image 2 video",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Upload reference images",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Image",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".jpg, .png, .jpeg",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "prompt",
+              "fieldType": "textarea",
+              "placeholder": "what should happen on the video",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Negative prompt",
+              "placeholder": "optional"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -1100,
+        -60
+      ],
+      "id": "833656f6-2f4a-4ae7-b989-3d8e541a420e",
+      "name": "On form submission",
+      "webhookId": "1446697c-ec54-4b3a-b0a4-d326809cbfe6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d55d6da-a78c-4a28-9343-0ea9035a0aa3",
+              "name": "COMFY_URL",
+              "value": "={{   ((u) => {   let s = u.trim();   if (!/^https?:\\/\\//i.test(s)) s = 'https://' + s;   const parts = s.split('/');   return parts[0] + '//' + parts[2]; })($json.comfyui_url)  }}",
+              "type": "string"
+            },
+            {
+              "id": "c491a696-6081-4e42-98f5-0c3b75c16edc",
+              "name": "NEGATIVE_PROMPT",
+              "value": "={{ $('On form submission').item.json['Negative prompt'] || $json.negative_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "e179a11b-ab0b-4772-b151-10b0b7d49a8c",
+              "name": "PROMPT",
+              "value": "={{ $('On form submission').item.json.prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -580,
+        -60
+      ],
+      "id": "a473f66e-ded6-43b2-a5ff-6a2f3e08012f",
+      "name": "Setup defaults"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/history/{{ $('Start the workflow with ComfyUI').first().json.prompt_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        -60
+      ],
+      "id": "caf89a6f-7097-4a86-9149-01ba95f19eac",
+      "name": "Get video generation status",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -60
+      ],
+      "id": "8bc5f8d0-7dc9-4531-aac6-81bda2471184",
+      "name": "Wait until the video gets generated",
+      "webhookId": "113055f5-52c2-43cf-b507-f09f6426d3e2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5e89df7d-4c0e-4bd4-8a84-b1e28bdb1f7e",
+              "leftValue": "={{ $json.keys().length > 0 && $json[$('Start the workflow with ComfyUI').item.json.prompt_id] && $json[$('Start the workflow with ComfyUI').item.json.prompt_id].status.completed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "354e3206-bbe3-481d-876b-255eed39f7cf",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        -60
+      ],
+      "id": "54f97d31-3354-4eb9-8625-3de629717080",
+      "name": "Completed?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9bfcdffd-8c7c-407d-b95c-83f8aa104845",
+              "leftValue": "={{ $json[$('Start the workflow with ComfyUI').item.json.prompt_id].status.status_str === 'success' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -80
+      ],
+      "id": "76c35ad6-b3a6-426b-9d43-bdcffb46d53c",
+      "name": "Success?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/view",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "output"
+            },
+            {
+              "name": "filename",
+              "value": "={{ $('Get video generation status').last().json[$('Start the workflow with ComfyUI').item.json.prompt_id].outputs.values().map(item => item.images).flat(Infinity).find(item => item.type === 'output').filename }}"
+            },
+            {
+              "name": "subfolder",
+              "value": "={{ $('Get video generation status').last().json[$('Start the workflow with ComfyUI').item.json.prompt_id].outputs['58'].images[0].subfolder }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1340,
+        -220
+      ],
+      "id": "b7d84c1b-1798-449c-ae1b-8ef0c1c91740",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "errorMessage": "An error occoured while generating the image"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        0
+      ],
+      "id": "6c3f42d5-f2c5-43a7-ac58-3f142205150f",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "content": "# Configure me",
+        "height": 420,
+        "width": 260,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        -260
+      ],
+      "id": "10c5a682-4743-4af4-bbb9-972639b2bb81",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ece166a-0536-4c3e-bf1f-e0d4ff300169",
+              "name": "workflow",
+              "value": "={\n  \"6\": {\n    \"inputs\": {\n      \"text\": \"${PROMPT}\",\n      \"clip\": [\n        \"38\",\n        0\n      ]\n    },\n    \"class_type\": \"CLIPTextEncode\",\n    \"_meta\": {\n      \"title\": \"CLIP Text Encode (Positive Prompt)\"\n    }\n  },\n  \"7\": {\n    \"inputs\": {\n      \"text\": \"${NEGATIVE_PROMPT}\",\n      \"clip\": [\n        \"38\",\n        0\n      ]\n    },\n    \"class_type\": \"CLIPTextEncode\",\n    \"_meta\": {\n      \"title\": \"CLIP Text Encode (Negative Prompt)\"\n    }\n  },\n  \"8\": {\n    \"inputs\": {\n      \"samples\": [\n        \"58\",\n        0\n      ],\n      \"vae\": [\n        \"39\",\n        0\n      ]\n    },\n    \"class_type\": \"VAEDecode\",\n    \"_meta\": {\n      \"title\": \"VAE Decode\"\n    }\n  },\n  \"37\": {\n    \"inputs\": {\n      \"unet_name\": \"wan2.2_i2v_high_noise_14B_fp16.safetensors\",\n      \"weight_dtype\": \"default\"\n    },\n    \"class_type\": \"UNETLoader\",\n    \"_meta\": {\n      \"title\": \"Load Diffusion Model\"\n    }\n  },\n  \"38\": {\n    \"inputs\": {\n      \"clip_name\": \"umt5_xxl_fp8_e4m3fn_scaled.safetensors\",\n      \"type\": \"wan\",\n      \"device\": \"default\"\n    },\n    \"class_type\": \"CLIPLoader\",\n    \"_meta\": {\n      \"title\": \"Load CLIP\"\n    }\n  },\n  \"39\": {\n    \"inputs\": {\n      \"vae_name\": \"wan_2.1_vae.safetensors\"\n    },\n    \"class_type\": \"VAELoader\",\n    \"_meta\": {\n      \"title\": \"Load VAE\"\n    }\n  },\n  \"54\": {\n    \"inputs\": {\n      \"shift\": 8.000000000000002,\n      \"model\": [\n        \"37\",\n        0\n      ]\n    },\n    \"class_type\": \"ModelSamplingSD3\",\n    \"_meta\": {\n      \"title\": \"ModelSamplingSD3\"\n    }\n  },\n  \"55\": {\n    \"inputs\": {\n      \"shift\": 8,\n      \"model\": [\n        \"56\",\n        0\n      ]\n    },\n    \"class_type\": \"ModelSamplingSD3\",\n    \"_meta\": {\n      \"title\": \"ModelSamplingSD3\"\n    }\n  },\n  \"56\": {\n    \"inputs\": {\n      \"unet_name\": \"wan2.2_i2v_low_noise_14B_fp16.safetensors\",\n      \"weight_dtype\": \"default\"\n    },\n    \"class_type\": \"UNETLoader\",\n    \"_meta\": {\n      \"title\": \"Load Diffusion Model\"\n    }\n  },\n  \"57\": {\n    \"inputs\": {\n      \"add_noise\": \"enable\",\n      \"noise_seed\": {{ (() => {\n  const max = 0xFFFFFFFF - 1;\n  const seed = Math.floor(Math.random() * max) + 1;\n  return seed;\n})() }},\n      \"steps\": 20,\n      \"cfg\": 3.5,\n      \"sampler_name\": \"euler\",\n      \"scheduler\": \"simple\",\n      \"start_at_step\": 0,\n      \"end_at_step\": 10,\n      \"return_with_leftover_noise\": \"enable\",\n      \"model\": [\n        \"54\",\n        0\n      ],\n      \"positive\": [\n        \"63\",\n        0\n      ],\n      \"negative\": [\n        \"63\",\n        1\n      ],\n      \"latent_image\": [\n        \"63\",\n        2\n      ]\n    },\n    \"class_type\": \"KSamplerAdvanced\",\n    \"_meta\": {\n      \"title\": \"KSampler (Advanced)\"\n    }\n  },\n  \"58\": {\n    \"inputs\": {\n      \"add_noise\": \"disable\",\n      \"noise_seed\": 0,\n      \"steps\": 20,\n      \"cfg\": 3.5,\n      \"sampler_name\": \"euler\",\n      \"scheduler\": \"simple\",\n      \"start_at_step\": 10,\n      \"end_at_step\": 10000,\n      \"return_with_leftover_noise\": \"disable\",\n      \"model\": [\n        \"55\",\n        0\n      ],\n      \"positive\": [\n        \"63\",\n        0\n      ],\n      \"negative\": [\n        \"63\",\n        1\n      ],\n      \"latent_image\": [\n        \"57\",\n        0\n      ]\n    },\n    \"class_type\": \"KSamplerAdvanced\",\n    \"_meta\": {\n      \"title\": \"KSampler (Advanced)\"\n    }\n  },\n  \"60\": {\n    \"inputs\": {\n      \"fps\": 16,\n      \"images\": [\n        \"8\",\n        0\n      ]\n    },\n    \"class_type\": \"CreateVideo\",\n    \"_meta\": {\n      \"title\": \"Create Video\"\n    }\n  },\n  \"61\": {\n    \"inputs\": {\n      \"filename_prefix\": \"video/ComfyUI\",\n      \"format\": \"auto\",\n      \"codec\": \"auto\",\n      \"video\": [\n        \"60\",\n        0\n      ]\n    },\n    \"class_type\": \"SaveVideo\",\n    \"_meta\": {\n      \"title\": \"Save Video\"\n    }\n  },\n  \"62\": {\n    \"inputs\": {\n      \"image\": \"${IMAGE}\"\n    },\n    \"class_type\": \"LoadImage\",\n    \"_meta\": {\n      \"title\": \"Load Image\"\n    }\n  },\n  \"63\": {\n    \"inputs\": {\n      \"width\": 1280,\n      \"height\": 704,\n      \"length\": 81,\n      \"batch_size\": 1,\n      \"positive\": [\n        \"6\",\n        0\n      ],\n      \"negative\": [\n        \"7\",\n        0\n      ],\n      \"vae\": [\n        \"39\",\n        0\n      ],\n      \"start_image\": [\n        \"62\",\n        0\n      ]\n    },\n    \"class_type\": \"WanImageToVideo\",\n    \"_meta\": {\n      \"title\": \"WanImageToVideo\"\n    }\n  }\n}",
+              "type": "string"
+            },
+            {
+              "id": "92df0709-c03c-400e-b2ac-1a8e3aff7416",
+              "name": "comfyui_url",
+              "value": "YOUR_COMFYUI_URL",
+              "type": "string"
+            },
+            {
+              "id": "fb621130-6eac-41ab-b514-576a0275f6b1",
+              "name": "negative_prompt",
+              "value": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -820,
+        -60
+      ],
+      "id": "1211892b-72ce-48ed-a3a2-34b11d860551",
+      "name": "Configure me"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $('On form submission').first()"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -60
+      ],
+      "id": "e3a1c16a-007a-4e13-83eb-74be27b3fb3e",
+      "name": "Relay image"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/upload/image",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "Image"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -180,
+        -60
+      ],
+      "id": "f1a7c926-1913-40ad-bafe-6a3dd4318e16",
+      "name": "Upload image to ComfyUI"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/prompt",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"client_id\": \"n8n\",\n  \"prompt\": {{ \n\n    $('Configure me').item.json.workflow\n      .replace('${IMAGE}', $json.name)\n      .replace('${PROMPT}', $('Setup defaults').first().json.PROMPT)\n      .replace('${NEGATIVE_PROMPT}', $('Setup defaults').first().json.NEGATIVE_PROMPT) \n\n}}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        40,
+        -60
+      ],
+      "id": "2270de9b-391c-48c7-b00e-77198113fc5f",
+      "name": "Start the workflow with ComfyUI"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configure me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup defaults": {
+      "main": [
+        [
+          {
+            "node": "Relay image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get video generation status": {
+      "main": [
+        [
+          {
+            "node": "Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait until the video gets generated": {
+      "main": [
+        [
+          {
+            "node": "Get video generation status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completed?": {
+      "main": [
+        [
+          {
+            "node": "Success?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait until the video gets generated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success?": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure me": {
+      "main": [
+        [
+          {
+            "node": "Setup defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relay image": {
+      "main": [
+        [
+          {
+            "node": "Upload image to ComfyUI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload image to ComfyUI": {
+      "main": [
+        [
+          {
+            "node": "Start the workflow with ComfyUI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start the workflow with ComfyUI": {
+      "main": [
+        [
+          {
+            "node": "Wait until the video gets generated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8aaad365-48d0-440e-95e3-89c0adf56409",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "PxbrEy2tcKlNGO6g",
+  "tags": []
+}
