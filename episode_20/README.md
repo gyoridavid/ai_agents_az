@@ -1,6 +1,6 @@
 # Episode 20: Use Wan 2.2, ComfyUI and n8n to generate videos for free
 
-In this video, we show you how to use Modal’s serverless GPU infrastructure with n8n to generate videos with Wan 2.2, ComfyUI and n8n for free
+In this video, we show you how you can run Wan 2.2 from Alibaba on modal.com using ComfyUI and n8n. You can use your $30 free credits you receive every month to generate stunning AI videos.
 
 <table>
   <tr>
@@ -16,7 +16,7 @@ In this video, we show you how to use Modal’s serverless GPU infrastructure wi
 
 ## Watch the video
 
-[![Run Flux Kontext 100% FREE without having a GPU - n8n automation](https://img.youtube.com/vi/ndMi2Mo7znA/0.jpg)](https://www.youtube.com/watch?v=ndMi2Mo7znA)
+[![Wan 2.2 for FREE (NO GPU NEEDED) - Best VEO3 and Seedance alternative (ComfyUI + n8n workflow)](https://img.youtube.com/vi/rZ45_IhojLY/0.jpg)](https://www.youtube.com/watch?v=rZ45_IhojLY)
 
 ## Free n8n JSON workflows
 
