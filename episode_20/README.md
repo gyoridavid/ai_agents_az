@@ -65,6 +65,7 @@ In this video, we show you how to use Modal’s serverless GPU infrastructure wi
 
 - [Join n8n](https://n8n.partnerlinks.io/fenoo5ekqs1g)
 - [Modal.com](https://modal.com)
+- [ComfyUI documentation](https://docs.comfy.org/)
 
 ## ComfyUI official workflows from the [ComfyUI documentation](https://docs.comfy.org/tutorials/video/wan/wan2_2)
 

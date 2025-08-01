@@ -256,7 +256,7 @@
             {
               "id": "92df0709-c03c-400e-b2ac-1a8e3aff7416",
               "name": "comfyui_url",
-              "value": "https://gyoridavid--example-comfyui-ui-dev.modal.run",
+              "value": "YOUR_COMFYUI_URL",
               "type": "string"
             },
             {
@@ -406,7 +406,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "fa58dc1d-2796-40f7-b8f1-ea271f22e5b6",
+  "versionId": "6cc26083-05dc-450e-a35f-f267b21830c5",
   "meta": {
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
   },

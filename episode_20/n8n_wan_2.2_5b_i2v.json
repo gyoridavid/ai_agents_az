@@ -263,7 +263,7 @@
             {
               "id": "92df0709-c03c-400e-b2ac-1a8e3aff7416",
               "name": "comfyui_url",
-              "value": "https://gyoridavid--example-comfyui-ui-dev.modal.run",
+              "value": "YOUR_COMFYUI_URL",
               "type": "string"
             },
             {
@@ -301,7 +301,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://gyoridavid--example-comfyui-ui-dev.modal.run/upload/image",
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/upload/image",
         "sendBody": true,
         "contentType": "multipart-form-data",
         "bodyParameters": {
@@ -478,7 +478,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "589a801e-d252-4123-befd-aa1e4d74d431",
+  "versionId": "4f782197-9b40-4431-bb3f-c49c8cd2ff1d",
   "meta": {
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
   },
