@@ -1,0 +1,415 @@
+{
+  "name": "ComfyUI: wan 2.2 5b - text 2 video",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Upload reference images",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "prompt",
+              "fieldType": "textarea",
+              "placeholder": "what should happen on the video",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Negative prompt",
+              "placeholder": "optional"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -620,
+        -60
+      ],
+      "id": "f7de41fc-a563-4e92-82ba-d5f3b877fa36",
+      "name": "On form submission",
+      "webhookId": "e0a61b98-84e7-42ab-9c8c-e5b130a8adc4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d55d6da-a78c-4a28-9343-0ea9035a0aa3",
+              "name": "COMFY_URL",
+              "value": "={{   ((u) => {   let s = u.trim();   if (!/^https?:\\/\\//i.test(s)) s = 'https://' + s;   const parts = s.split('/');   return parts[0] + '//' + parts[2]; })($json.comfyui_url)  }}",
+              "type": "string"
+            },
+            {
+              "id": "c491a696-6081-4e42-98f5-0c3b75c16edc",
+              "name": "NEGATIVE_PROMPT",
+              "value": "={{ $('On form submission').item.json['Negative prompt'] || $json.negative_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "e179a11b-ab0b-4772-b151-10b0b7d49a8c",
+              "name": "PROMPT",
+              "value": "={{ $('On form submission').item.json.prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -100,
+        -60
+      ],
+      "id": "677e7deb-bf71-48b6-bea7-46b46ba6b18c",
+      "name": "Setup defaults"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/history/{{ $('Start the workflow with ComfyUI').first().json.prompt_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        -60
+      ],
+      "id": "0fb73fc5-555b-49e1-8370-990732971fee",
+      "name": "Get video generation status",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        -60
+      ],
+      "id": "ec329f92-0ca2-499b-900f-391da62266ba",
+      "name": "Wait until the video gets generated",
+      "webhookId": "e785aaa5-76f0-473d-bbc9-bd05b1c1565c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5e89df7d-4c0e-4bd4-8a84-b1e28bdb1f7e",
+              "leftValue": "={{ $json.keys().length > 0 && $json[$('Start the workflow with ComfyUI').item.json.prompt_id] && $json[$('Start the workflow with ComfyUI').item.json.prompt_id].status.completed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "354e3206-bbe3-481d-876b-255eed39f7cf",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        -60
+      ],
+      "id": "7f8edbdb-0dd2-46c7-83a2-2fce33dd7058",
+      "name": "Completed?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9bfcdffd-8c7c-407d-b95c-83f8aa104845",
+              "leftValue": "={{ $json[$('Start the workflow with ComfyUI').item.json.prompt_id].status.status_str === 'success' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        980,
+        -80
+      ],
+      "id": "14c2f182-2eee-4420-86dd-f2d7244db30d",
+      "name": "Success?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/view",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "output"
+            },
+            {
+              "name": "filename",
+              "value": "={{ $('Get video generation status').last().json[$('Start the workflow with ComfyUI').item.json.prompt_id].outputs.values().map(item => item.images).flat(Infinity).find(item => item.type === 'output').filename }}"
+            },
+            {
+              "name": "subfolder",
+              "value": "={{ $('Get video generation status').last().json[$('Start the workflow with ComfyUI').item.json.prompt_id].outputs['58'].images[0].subfolder }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1260,
+        -240
+      ],
+      "id": "f5d3ffcf-e9b2-4417-a489-ecdf46be67f6",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "errorMessage": "An error occoured while generating the image"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        80
+      ],
+      "id": "42b6898a-7150-4c4e-9098-fc96865f1dc6",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ece166a-0536-4c3e-bf1f-e0d4ff300169",
+              "name": "workflow",
+              "value": "={\n  \"3\": {\n    \"inputs\": {\n      \"seed\": {{ (() => {\n  const max = 0xFFFFFFFF - 1;\n  const seed = Math.floor(Math.random() * max) + 1;\n  return seed;\n})() }},\n      \"steps\": 20,\n      \"cfg\": 5,\n      \"sampler_name\": \"uni_pc\",\n      \"scheduler\": \"simple\",\n      \"denoise\": 1,\n      \"model\": [\n        \"48\",\n        0\n      ],\n      \"positive\": [\n        \"6\",\n        0\n      ],\n      \"negative\": [\n        \"7\",\n        0\n      ],\n      \"latent_image\": [\n        \"55\",\n        0\n      ]\n    },\n    \"class_type\": \"KSampler\",\n    \"_meta\": {\n      \"title\": \"KSampler\"\n    }\n  },\n  \"6\": {\n    \"inputs\": {\n      \"text\": \"${PROMPT}\",\n      \"clip\": [\n        \"38\",\n        0\n      ]\n    },\n    \"class_type\": \"CLIPTextEncode\",\n    \"_meta\": {\n      \"title\": \"CLIP Text Encode (Positive Prompt)\"\n    }\n  },\n  \"7\": {\n    \"inputs\": {\n      \"text\": \"${NEGATIVE_PROMPT}\",\n      \"clip\": [\n        \"38\",\n        0\n      ]\n    },\n    \"class_type\": \"CLIPTextEncode\",\n    \"_meta\": {\n      \"title\": \"CLIP Text Encode (Negative Prompt)\"\n    }\n  },\n  \"8\": {\n    \"inputs\": {\n      \"samples\": [\n        \"3\",\n        0\n      ],\n      \"vae\": [\n        \"39\",\n        0\n      ]\n    },\n    \"class_type\": \"VAEDecode\",\n    \"_meta\": {\n      \"title\": \"VAE Decode\"\n    }\n  },\n  \"37\": {\n    \"inputs\": {\n      \"unet_name\": \"wan2.2_ti2v_5B_fp16.safetensors\",\n      \"weight_dtype\": \"default\"\n    },\n    \"class_type\": \"UNETLoader\",\n    \"_meta\": {\n      \"title\": \"Load Diffusion Model\"\n    }\n  },\n  \"38\": {\n    \"inputs\": {\n      \"clip_name\": \"umt5_xxl_fp8_e4m3fn_scaled.safetensors\",\n      \"type\": \"wan\",\n      \"device\": \"default\"\n    },\n    \"class_type\": \"CLIPLoader\",\n    \"_meta\": {\n      \"title\": \"Load CLIP\"\n    }\n  },\n  \"39\": {\n    \"inputs\": {\n      \"vae_name\": \"wan2.2_vae.safetensors\"\n    },\n    \"class_type\": \"VAELoader\",\n    \"_meta\": {\n      \"title\": \"Load VAE\"\n    }\n  },\n  \"48\": {\n    \"inputs\": {\n      \"shift\": 8,\n      \"model\": [\n        \"37\",\n        0\n      ]\n    },\n    \"class_type\": \"ModelSamplingSD3\",\n    \"_meta\": {\n      \"title\": \"ModelSamplingSD3\"\n    }\n  },\n  \"55\": {\n    \"inputs\": {\n      \"width\": 1280,\n      \"height\": 704,\n      \"length\": 121,\n      \"batch_size\": 1,\n      \"vae\": [\n        \"39\",\n        0\n      ]\n    },\n    \"class_type\": \"Wan22ImageToVideoLatent\",\n    \"_meta\": {\n      \"title\": \"Wan22ImageToVideoLatent\"\n    }\n  },\n  \"57\": {\n    \"inputs\": {\n      \"fps\": 24,\n      \"images\": [\n        \"8\",\n        0\n      ]\n    },\n    \"class_type\": \"CreateVideo\",\n    \"_meta\": {\n      \"title\": \"Create Video\"\n    }\n  },\n  \"58\": {\n    \"inputs\": {\n      \"filename_prefix\": \"video/ComfyUI\",\n      \"format\": \"auto\",\n      \"codec\": \"auto\",\n      \"video-preview\": \"\",\n      \"video\": [\n        \"57\",\n        0\n      ]\n    },\n    \"class_type\": \"SaveVideo\",\n    \"_meta\": {\n      \"title\": \"Save Video\"\n    }\n  }\n}",
+              "type": "string"
+            },
+            {
+              "id": "92df0709-c03c-400e-b2ac-1a8e3aff7416",
+              "name": "comfyui_url",
+              "value": "https://gyoridavid--example-comfyui-ui-dev.modal.run",
+              "type": "string"
+            },
+            {
+              "id": "fb621130-6eac-41ab-b514-576a0275f6b1",
+              "name": "negative_prompt",
+              "value": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -380,
+        -60
+      ],
+      "id": "1f08ab0e-14b2-4ed9-a83a-722a1f9b0ea4",
+      "name": "Configuration"
+    },
+    {
+      "parameters": {
+        "content": "# Configure me",
+        "height": 420,
+        "width": 260,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -280
+      ],
+      "id": "2c275d22-12c7-420f-b172-920b69ab1288",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup defaults').first().json.COMFY_URL }}/prompt",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"client_id\": \"n8n\",\n  \"prompt\": {{ \n\n    $('Configuration').item.json.workflow\n      .replace('${PROMPT}', $('Setup defaults').first().json.PROMPT)\n      .replace('${NEGATIVE_PROMPT}', $('Setup defaults').first().json.NEGATIVE_PROMPT) \n\n}}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        60,
+        -60
+      ],
+      "id": "a3d6ad94-891f-4e4d-861b-543a424f45d9",
+      "name": "Start the workflow with ComfyUI"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup defaults": {
+      "main": [
+        [
+          {
+            "node": "Start the workflow with ComfyUI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get video generation status": {
+      "main": [
+        [
+          {
+            "node": "Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait until the video gets generated": {
+      "main": [
+        [
+          {
+            "node": "Get video generation status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completed?": {
+      "main": [
+        [
+          {
+            "node": "Success?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait until the video gets generated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success?": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Setup defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start the workflow with ComfyUI": {
+      "main": [
+        [
+          {
+            "node": "Wait until the video gets generated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1cefc53b-5b76-4756-a0c6-f4a706fe8d33",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "DuIW59NyIFVGq0C4",
+  "tags": []
+}
