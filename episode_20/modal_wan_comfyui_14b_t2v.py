@@ -52,7 +52,6 @@ def hf_download():
         repo_id="Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
         filename="split_files/vae/wan_2.1_vae.safetensors",
         cache_dir="/cache",
-        token=hf_token,
     )
 
     subprocess.run(
