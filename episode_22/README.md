@@ -14,7 +14,7 @@ In this video, we show you how to create viral sleep music videos inspired by tr
 
 - [Join n8n](https://n8n.partnerlinks.io/fenoo5ekqs1g)
 - [Fal.ai API keys](https://fal.ai/dashboard/keys)
-- [ElevenLabs](https://try.elevenlabs.io/wsiy0rypx5wq)
+- [ElevenLabs](https://try.elevenlabs.io/6jle18nhesc6)
 - [OpenAI API keys](https://platform.openai.com/api-keys)
 
 ## Watch the video
