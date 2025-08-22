@@ -28,6 +28,8 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 18: Scary story TikTok videos workflow](episode_18)
 - [Episode 19: Run FLUX.1 Kontext [dev] with modal.com](episode_19)
 - [Episode 20: Use Wan 2.2, ComfyUI and n8n to generate videos for free](episode_20)
+- [Episode 21: 10 EASY faceless niches that pay well - monetize in a MONTH (2025)](episode_21)
+- [Episode 22: Sleep long-form videos with GPT-5, ElevenMusic, Imagen4, Seendance and n8n](episode_22)
 
 ## servers
 

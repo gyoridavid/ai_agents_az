@@ -4,10 +4,10 @@ import modal
 image = (  # build up a Modal Image to run ComfyUI, step by step
     modal.Image.debian_slim(python_version="3.12")  # start from basic Linux with Python
     .apt_install("git")  # install git to clone ComfyUI
-    .pip_install("comfy-cli==1.4.1", force_build=True)  # install comfy-cli
+    .pip_install("fastapi[standard]==0.115.4")  # install web dependencies
+    .pip_install("comfy-cli==1.4.1")  # install comfy-cli
     .run_commands(  # use comfy-cli to install ComfyUI and its dependencies
-        "comfy --skip-prompt install --fast-deps --nvidia --version 0.3.47",
-        force_build=True,
+        "comfy --skip-prompt install --fast-deps --nvidia --version 0.3.47"
     )
 )
 
@@ -17,7 +17,6 @@ image = image.run_commands(  # download a custom node
     "git clone https://github.com/ChenDarYen/ComfyUI-NAG.git /root/comfy/ComfyUI/custom_nodes/ComfyUI-NAG",
     "git clone https://github.com/kijai/ComfyUI-KJNodes.git /root/comfy/ComfyUI/custom_nodes/ComfyUI-KJNodes",
     "git clone https://github.com/cubiq/ComfyUI_essentials.git /root/comfy/ComfyUI/custom_nodes/ComfyUI_essentials",
-    force_build=True,
 )
 
 
