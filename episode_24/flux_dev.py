@@ -123,8 +123,8 @@ with flux_image.imports():
 # with the name `huggingface-secret` following the instructions in the template.*
 
 MINUTES = 60  # seconds
-VARIANT = "schnell"  # schnell or dev
-NUM_INFERENCE_STEPS = 4  # use ~50 for [dev], (1-4) for [schnell]
+VARIANT = "Krea-dev"  # schnell, dev, or Krea-dev
+DEFAULT_NUM_INFERENCE_STEPS = 8  # use ~50 for [dev], (1-4) for [schnell]
 
 CACHE_VOLUME = modal.Volume.from_name("cache_volume", create_if_missing=True)
 
@@ -147,36 +147,56 @@ class Model:
     @modal.enter(snap=True)
     def load(self):
         """Load model to CPU for memory snapshot."""
+        print("📥 Starting model loading phase (CPU)...")
+        print(f"📦 Loading FLUX.1-{VARIANT} model from Hugging Face...")
+
         pipe = FluxPipeline.from_pretrained(
             f"black-forest-labs/FLUX.1-{VARIANT}",
             torch_dtype=torch.bfloat16,
             use_safetensors=True,
         ).to("cpu")
+
+        print("✅ Model loaded to CPU successfully")
+        print("💾 Memory snapshot will be created after this step")
         self.pipe = pipe
 
     @modal.enter(snap=False)
     def setup(self):
         """Move model to GPU and apply optimizations."""
-        self.pipe.to("cuda")
-        self.pipe = optimize(self.pipe, compile=self.compile)
+        print("🚀 Starting optimization phase...")
+        print("🔄 Moving model from CPU to GPU...")
 
-        # Apply TeaCache for 2x speedup (approximate caching technique)
+        self.pipe.to("cuda")
+        print("✅ Model moved to GPU successfully")
+
+        print("⚡ Applying standard optimizations and torch compilation...")
+        self.pipe = optimize(self.pipe, compile=self.compile)
+        print("✅ Standard optimizations completed")
+
+        print("🫖 Setting up TeaCache for 2x speedup...")
         self.setup_teacache()
         print("🚀 TeaCache setup completed for 2x speedup")
+        print("🎯 Model is ready for inference!")
 
     def setup_teacache(self):
         """Setup TeaCache for approximate caching speedup."""
+        print("🔧 Configuring TeaCache parameters...")
+
         # Enable TeaCache on the transformer
         self.pipe.transformer.__class__.enable_teacache = True
         self.pipe.transformer.__class__.cnt = 0
-        self.pipe.transformer.__class__.num_steps = NUM_INFERENCE_STEPS
+        self.pipe.transformer.__class__.num_steps = None  # Will be set during inference
         self.pipe.transformer.__class__.rel_l1_thresh = 0.6  # 2.0x speedup threshold
         self.pipe.transformer.__class__.accumulated_rel_l1_distance = 0
         self.pipe.transformer.__class__.previous_input = None
         self.pipe.transformer.__class__.previous_result = None
 
-        # Monkey patch the forward method with TeaCache logic
+        print(f"📊 TeaCache threshold set to {0.6} for 2x speedup")
+        print(f"🔄 Steps will be set dynamically during inference")
+
+        print("🔀 Patching transformer forward method with TeaCache logic...")
         self.patch_transformer_forward()
+        print("✅ TeaCache forward method patched successfully")
 
     def patch_transformer_forward(self):
         """Patch the transformer forward method with TeaCache logic."""
@@ -205,54 +225,72 @@ class Model:
                 if hasattr(self.pipe.transformer, "cnt") and hasattr(
                     self.pipe.transformer, "num_steps"
                 ):
-                    # Use hidden_states directly for change detection (simplified approach)
-                    current_input = hidden_states.clone()
-
+                    # Safety check: ensure num_steps is valid
                     if (
-                        self.pipe.transformer.cnt == 0
-                        or self.pipe.transformer.cnt
-                        == self.pipe.transformer.num_steps - 1
+                        self.pipe.transformer.num_steps is None
+                        or self.pipe.transformer.num_steps <= 0
                     ):
+                        print(
+                            "⚠️  TeaCache: Invalid num_steps, disabling TeaCache for this inference"
+                        )
                         should_calc = True
-                        self.pipe.transformer.accumulated_rel_l1_distance = 0
                     else:
-                        # TeaCache coefficients for FLUX (from official implementation)
-                        coefficients = [
-                            4.98651651e02,
-                            -2.83781631e02,
-                            5.58554382e01,
-                            -3.82021401e00,
-                            2.64230861e-01,
-                        ]
-                        rescale_func = np.poly1d(coefficients)
+                        # Use hidden_states directly for change detection (simplified approach)
+                        current_input = hidden_states.clone()
 
                         if (
-                            hasattr(self.pipe.transformer, "previous_input")
-                            and self.pipe.transformer.previous_input is not None
+                            self.pipe.transformer.cnt == 0
+                            or self.pipe.transformer.cnt
+                            == self.pipe.transformer.num_steps - 1
                         ):
-                            # Calculate relative L1 distance between inputs
-                            rel_diff = (
-                                current_input - self.pipe.transformer.previous_input
-                            ).abs().mean() / self.pipe.transformer.previous_input.abs().mean()
-
-                            self.pipe.transformer.accumulated_rel_l1_distance += (
-                                rescale_func(rel_diff.cpu().item())
-                            )
+                            should_calc = True
+                            self.pipe.transformer.accumulated_rel_l1_distance = 0
+                        else:
+                            # TeaCache coefficients for FLUX (from official implementation)
+                            coefficients = [
+                                4.98651651e02,
+                                -2.83781631e02,
+                                5.58554382e01,
+                                -3.82021401e00,
+                                2.64230861e-01,
+                            ]
+                            rescale_func = np.poly1d(coefficients)
 
                             if (
-                                self.pipe.transformer.accumulated_rel_l1_distance
-                                < self.pipe.transformer.rel_l1_thresh
+                                hasattr(self.pipe.transformer, "previous_input")
+                                and self.pipe.transformer.previous_input is not None
                             ):
-                                should_calc = False
-                            else:
-                                should_calc = True
-                                self.pipe.transformer.accumulated_rel_l1_distance = 0
+                                # Calculate relative L1 distance between inputs
+                                rel_diff = (
+                                    current_input - self.pipe.transformer.previous_input
+                                ).abs().mean() / self.pipe.transformer.previous_input.abs().mean()
 
-                    self.pipe.transformer.previous_input = current_input
-                    self.pipe.transformer.cnt += 1
+                                self.pipe.transformer.accumulated_rel_l1_distance += (
+                                    rescale_func(rel_diff.cpu().item())
+                                )
 
-                    if self.pipe.transformer.cnt == self.pipe.transformer.num_steps:
-                        self.pipe.transformer.cnt = 0
+                                if (
+                                    self.pipe.transformer.accumulated_rel_l1_distance
+                                    < self.pipe.transformer.rel_l1_thresh
+                                ):
+                                    should_calc = False
+                                    print(
+                                        f"🫖 TeaCache: Step {self.pipe.transformer.cnt}/{self.pipe.transformer.num_steps} - Using cached result (distance: {self.pipe.transformer.accumulated_rel_l1_distance:.3f})"
+                                    )
+                                else:
+                                    should_calc = True
+                                    self.pipe.transformer.accumulated_rel_l1_distance = (
+                                        0
+                                    )
+                                    print(
+                                        f"🫖 TeaCache: Step {self.pipe.transformer.cnt}/{self.pipe.transformer.num_steps} - Computing new result (threshold exceeded)"
+                                    )
+
+                        self.pipe.transformer.previous_input = current_input
+                        self.pipe.transformer.cnt += 1
+
+                        if self.pipe.transformer.cnt == self.pipe.transformer.num_steps:
+                            self.pipe.transformer.cnt = 0
 
                     # Use cached result if we're skipping computation
                     if (
@@ -301,27 +339,53 @@ class Model:
         width: int = 1024,
         height: int = 1024,
         seed: Optional[int] = None,
+        steps: int = DEFAULT_NUM_INFERENCE_STEPS,
+        cfg: float = 1.0,
     ) -> bytes:
-        print("🎨 generating image...")
+        print("🎨 Starting image generation...")
+        print(f"📝 Prompt: {prompt}")
+        print(f"📐 Dimensions: {width}x{height}")
+        print(f"🎛️  CFG Scale: {cfg}")
+
+        # Ensure steps is valid
+        if steps is None or steps <= 0:
+            steps = DEFAULT_NUM_INFERENCE_STEPS
+            print(f"⚠️  Invalid steps value, using default: {steps}")
+
+        # Update TeaCache with the actual number of steps being used
+        if (
+            hasattr(self.pipe.transformer, "enable_teacache")
+            and self.pipe.transformer.enable_teacache
+        ):
+            self.pipe.transformer.__class__.num_steps = steps
+            self.pipe.transformer.__class__.cnt = 0  # Reset counter
+            print(f"🫖 TeaCache configured for {steps} steps")
 
         # Use provided seed or generate a random one
         if seed is not None:
+            print(f"🎲 Using seed: {seed}")
             generator = torch.Generator(device="cuda").manual_seed(seed)
         else:
+            print("🎲 Using random seed")
             generator = torch.Generator(device="cuda")
 
+        print(f"🔄 Running {steps} inference steps with TeaCache optimization...")
         out = self.pipe(
             prompt,
             width=width,
             height=height,
             output_type="pil",
-            num_inference_steps=NUM_INFERENCE_STEPS,
+            num_inference_steps=steps,
             generator=generator,
+            guidance_scale=cfg,
         ).images[0]
 
+        print("🖼️  Converting image to bytes...")
         byte_stream = BytesIO()
         out.save(byte_stream, format="PNG")
-        return byte_stream.getvalue()
+        result_bytes = byte_stream.getvalue()
+        print(f"✅ Image generated successfully! Size: {len(result_bytes)} bytes")
+        return result_bytes
 
 
 # Create a separate FastAPI app to handle the web interface
@@ -340,6 +404,8 @@ def fastapi_app():
         width: int = 1024
         height: int = 1024
         seed: Optional[int] = None
+        steps: int = DEFAULT_NUM_INFERENCE_STEPS
+        cfg: float = 1.0
 
     web_app = FastAPI(
         title="Flux Image Generator",
@@ -361,6 +427,8 @@ def fastapi_app():
         - **width**: Width of the generated image (default: 1024)
         - **height**: Height of the generated image (default: 1024)
         - **seed**: Optional seed for reproducible results
+        - **steps**: Number of inference steps (default: 8)
+        - **cfg**: Classifier-Free Guidance scale (default: 1.0)
         """
 
         if os.environ.get("BEARER_TOKEN", False):
@@ -372,12 +440,19 @@ def fastapi_app():
                 )
 
         try:
+            # Validate and set default for steps if needed
+            steps = request.steps
+            if steps is None or steps <= 0:
+                steps = DEFAULT_NUM_INFERENCE_STEPS
+
             model = Model()
             result_bytes = model.inference.remote(
                 prompt=request.prompt,
                 width=request.width,
                 height=request.height,
                 seed=request.seed,
+                steps=steps,
+                cfg=request.cfg,
             )
 
             return Response(
@@ -478,17 +553,23 @@ def main(
 
 
 def optimize(pipe, compile=True):
-    # fuse QKV projections in Transformer and VAE
+    print("🔧 Starting optimization process...")
+
+    print("🔗 Fusing QKV projections in Transformer and VAE...")
     pipe.transformer.fuse_qkv_projections()
     pipe.vae.fuse_qkv_projections()
+    print("✅ QKV projections fused successfully")
 
-    # switch memory layout to Torch's preferred, channels_last
+    print("💾 Switching to channels_last memory layout...")
     pipe.transformer.to(memory_format=torch.channels_last)
     pipe.vae.to(memory_format=torch.channels_last)
+    print("✅ Memory layout optimized")
 
     if not compile:
+        print("⚠️  Torch compilation disabled, skipping compilation step")
         return pipe
 
+    print("⚡ Configuring torch compilation settings...")
     # set torch compile flags with enhanced configuration
     config = torch._inductor.config
     config.disable_progress = False  # show progress bar
@@ -498,31 +579,36 @@ def optimize(pipe, compile=True):
     config.coordinate_descent_check_all_directions = True
     config.epilogue_fusion = False  # do not fuse pointwise ops into matmuls
     config.shape_padding = True  # new optimization from blog post
+    print("✅ Torch compilation config set")
 
-    # tag the compute-intensive modules, the Transformer and VAE decoder, for compilation
-    # using max-autotune-no-cudagraphs and dynamic=True as per blog post
+    print("🚀 Compiling transformer with max-autotune-no-cudagraphs...")
     pipe.transformer = torch.compile(
         pipe.transformer,
         mode="max-autotune-no-cudagraphs",
         dynamic=True,
         fullgraph=True,
     )
+    print("✅ Transformer compiled")
+
+    print("🚀 Compiling VAE decoder...")
     pipe.vae.decode = torch.compile(
         pipe.vae.decode, mode="max-autotune-no-cudagraphs", dynamic=True, fullgraph=True
     )
+    print("✅ VAE decoder compiled")
 
     # trigger torch compilation
-    print("🔦 running torch compilation (may take up to 20 minutes)...")
+    print("🔦 Triggering torch compilation with dummy inference...")
+    print("⏱️  This may take up to 20 minutes on first run...")
 
     pipe(
         "dummy prompt to trigger torch compilation",
         output_type="pil",
         height=1024,
         width=1024,
-        num_inference_steps=NUM_INFERENCE_STEPS,  # use ~50 for [dev], smaller for [schnell]
+        num_inference_steps=DEFAULT_NUM_INFERENCE_STEPS,  # use ~50 for [dev], smaller for [schnell]
         num_images_per_prompt=1,
     ).images[0]
 
-    print("🔦 finished torch compilation")
+    print("🔦 Torch compilation completed successfully!")
 
     return pipe
