@@ -1,0 +1,279 @@
+{
+  "name": "Cloudflare Workers AI Flux subworkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "result.image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "8ca149ce-c9ca-412b-a908-cf02e8df4b78",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "url": "https://api.cloudflare.com/client/v4/accounts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "8e5b1fe3-f67e-4568-ac3e-a85b97ba87ef",
+      "name": "Get accounts",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "jMnxp4DM3Ed198G6",
+          "name": "Cloudflare"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.cloudflare.com/client/v4/accounts/{{ $json.result[0].id }}/ai/run/@cf/black-forest-labs/flux-1-schnell",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={{ \n\nJSON.stringify(\n  {\n    prompt: $('Setup workflow').item.json.prompt,\n    seed: $('Setup workflow').item.json.seed,\n    \"width\": $('Setup workflow').item.json.width,\n    \"height\": $('Setup workflow').item.json.height,\n    \"steps\": $('Setup workflow').item.json.steps\n  }\n) \n\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "f2d17b27-8c0c-48a8-ac83-82038f91f9b8",
+      "name": "Get Flux Schnell image",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "jMnxp4DM3Ed198G6",
+          "name": "Cloudflare"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            },
+            {
+              "name": "width",
+              "type": "number"
+            },
+            {
+              "name": "height",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -864,
+        0
+      ],
+      "id": "60a7e3aa-996e-4da7-a94b-96fc1a8308ed",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "errorMessage": "The size of the image (width x height) is larger than 1 megapixel"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -224
+      ],
+      "id": "f0e7d7f9-1826-42d0-9986-a84723b5f1f6",
+      "name": "Image > 1 megapixel"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f6e30a82-76cd-4bfd-9bc5-b7fffb15e35c",
+              "leftValue": "={{ $json.width * $json.height > 1048576 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -448,
+        -16
+      ],
+      "id": "2a02b7c6-12bd-4e2a-b578-c63cc1a57ea3",
+      "name": "Check image size"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f7d5020-0710-4f3c-858f-0485a2bd2963",
+              "name": "width",
+              "value": "={{ $json.width || 1024 }}",
+              "type": "number"
+            },
+            {
+              "id": "39b906fa-3e0b-45b9-9c1b-95cbc51e195d",
+              "name": "prompt",
+              "value": "={{ $json.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "3f8593d2-cfb3-437a-a9fc-4430995cb78f",
+              "name": "height",
+              "value": "={{ $json.height || 1024 }}",
+              "type": "number"
+            },
+            {
+              "id": "065181ef-404a-4860-9019-976e6e8391e0",
+              "name": "seed",
+              "value": "={{ Math.floor(Math.random() * 100000000) }}",
+              "type": "number"
+            },
+            {
+              "id": "2c131da3-e708-4468-bb09-d400e7e5f28c",
+              "name": "steps",
+              "value": 4,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -656,
+        0
+      ],
+      "id": "8d13a67b-763b-468a-8f34-f1b5ed9e69bb",
+      "name": "Setup workflow"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "prompt": "A cat at the beach",
+          "width": 1024,
+          "height": 768
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Get accounts": {
+      "main": [
+        [
+          {
+            "node": "Get Flux Schnell image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Flux Schnell image": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Setup workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check image size": {
+      "main": [
+        [
+          {
+            "node": "Image > 1 megapixel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup workflow": {
+      "main": [
+        [
+          {
+            "node": "Check image size",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "989aca08-327f-4d9a-a1f2-c62d86f92c31",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "qUcfFrY2UvwlIjbX",
+  "tags": []
+}
