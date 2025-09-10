@@ -46,4 +46,5 @@ In this video, we show you how to use Modal’s serverless GPU infrastructure wi
 
 ## Watch the video
 
-[![](https://img.youtube.com/vi//0.jpg)](https://www.youtube.com/watch?v=)
+[![100% FREE AI image generation with n8n (Flux and Qwen)
+](https://img.youtube.com/vi/2tycZNP5_IA/0.jpg)](https://www.youtube.com/watch?v=2tycZNP5_IA)
