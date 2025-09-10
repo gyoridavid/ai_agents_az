@@ -1,4 +1,4 @@
-# Episode 24: generate images with Qwen Image, Flux.1 [dev] and Fluex.1 Schnell with modal.com
+# Episode 24: generate images with Qwen Image, Flux.1 [dev] and Flex.1 Schnell with modal.com and Cloudflare Workers AI
 
 In this video, we show you how to use Modal’s serverless GPU infrastructure with n8n to do image generation with Flux Kontext Dev for free.
 

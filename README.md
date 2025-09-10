@@ -31,7 +31,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 21: 10 EASY faceless niches that pay well - monetize in a MONTH (2025)](episode_21)
 - [Episode 22: Sleep long-form videos with GPT-5, ElevenMusic, Imagen4, Seendance and n8n](episode_22)
 - [Episode 23: UGC videos with nanobanana and n8n](episode_23)
-- [Episode 24: generate images with Qwen Image, Flux.1 [dev] and Fluex.1 Schnell with modal.com](episode_24)
+- [Episode 24: generate images with Qwen Image, Flux.1 [dev] and Flux.1 Schnell with modal.com and Cloudflare Workers AI](episode_24)
 
 ## servers
 
