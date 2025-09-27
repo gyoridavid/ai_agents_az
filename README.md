@@ -1,10 +1,9 @@
 # AI Agents A-Z
 
+> [!IMPORTANT]  
+> From season 2, we are releasing our workflows and resources in the [FOREVER FREE Skool community](https://www.skool.com/ai-agents-a-z-for-business-6548). No more changes can be expected in this repository.
+
 In this repo, you can find the n8n templates we created for the episodes of [AI Agents A-Z](https://www.youtube.com/channel/UCloXqLhp_KGhHBe1kwaL2Tg).
-
-## [📚 Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about)
-
-### Be part of a growing community and help us create more content
 
 ## Season 1
 
