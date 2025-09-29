@@ -16,7 +16,6 @@ In this video, we show you how to create TikTok scary story videos using Togethe
 
 ## Additional resources
 
-- [AI Agents No-Code Tools Github Repo](https://github.com/gyoridavid/ai-agents-no-code-tools)
 - [Background music](bg_music.mp3)
 - [Overlay video](bg_1.mp4)
 - [Voice sample](alan_original.mp3)
