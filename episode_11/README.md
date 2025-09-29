@@ -17,7 +17,6 @@ You can run this whole automation on your machine.
 
 ## Additional resources
 
-- [AI Agents No-Code Tools Github Repo](https://github.com/gyoridavid/ai-agents-no-code-tools)
 - [Join n8n](https://n8n.partnerlinks.io/fenoo5ekqs1g)
 - [Together AI](https://www.together.ai/models/flux-1-schnell)
 - [Youtube audio library for free music](https://www.youtube.com/audiolibrary)
