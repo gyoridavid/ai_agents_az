@@ -1,0 +1,426 @@
+{
+  "name": "Wan 2.2 animate move",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Wan 2.2 animate (replace)",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Video",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".mp4",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Image",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".png,.jpg,.avif,.webp",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resolution",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "480p"
+                  },
+                  {
+                    "option": "580p"
+                  },
+                  {
+                    "option": "720p"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -576,
+        0
+      ],
+      "id": "f5d1fe32-dba4-4693-b572-92827900b738",
+      "name": "On form submission",
+      "webhookId": "12031b7e-9e6c-4543-bb92-e0987112cc99"
+    },
+    {
+      "parameters": {
+        "content": "# Generate image",
+        "height": 288,
+        "width": 1172,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -80
+      ],
+      "id": "fd9c0e55-86e7-4be7-87ce-d2cccf74835d",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "content": "# Download",
+        "height": 288,
+        "width": 276,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -80
+      ],
+      "id": "0193f299-6ae8-4f4a-9d67-5f776e50bb2d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Premium AI video generation community!](https://www.skool.com/ai-agents-az/about)\n\n## Create videos and build passive income on YouTube",
+        "height": 156,
+        "width": 1484,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -272
+      ],
+      "id": "87790ffc-55c0-4cf9-9c60-ab4fe4650154",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "# Prepare data",
+        "height": 288,
+        "width": 276,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -80
+      ],
+      "id": "7c1b9842-dddd-413d-b9d1-d205323a9595",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const file in $input.first().binary) {\n  try {\n    const bin = $input.first().binary[file];\n    const binBuffer = await this.helpers.getBinaryDataBuffer(0, file);\n\n    const path = bin.directory\n      ? `${bin.directory}/${bin.fileName}`\n      : bin.fileName;\n\n    results.push(`data:${bin.mimeType};base64,` + Buffer.from(binBuffer).toString('base64'));\n  } catch (error) {\n    console.error(`Error processing file \"${file}\": ${error.message}`);\n  }\n}\n\nreturn [{\n  json: {\n    files: results, \n    resolution: $input.first().json['Resolution']\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "391a1ac7-b92b-442e-9364-c9e03479869e",
+      "name": "Convert video+image to base64"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/wan/v2.2-14b/animate/move",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n  \"video_url\": $json.files[0],\n  \"image_url\": $json.files[0],\n  \"resolution\": $json.resolution\n}, null, 2)\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "112a13b7-7b65-4392-9a89-082598d04af7",
+      "name": "⚠️ Generate video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BUYuOe8V0hqLtA02",
+          "name": "fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "983a5250-d722-4735-a2d7-19911b395205",
+      "name": "Wait for video generation",
+      "webhookId": "375d3b6f-0fa6-45ce-a0ad-cdc17cab59f3"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate video').item.json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        -16
+      ],
+      "id": "58f2baba-ed13-440e-bdd4-ba105796fdc2",
+      "name": "⚠️ Get status of the video generation",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BUYuOe8V0hqLtA02",
+          "name": "fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "COMPLETED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6fc5bea4-1567-474b-bfca-5394eb303217"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COMPLETED"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0882f634-2472-4d24-a1c3-a39f0cd94855",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_PROGRESS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e6c8b207-13ac-4537-8c5c-677039bc2fef",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_QUEUE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_QUEUE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        -16
+      ],
+      "id": "77fbca2b-4a6d-4d2c-9532-a6d99e41d509",
+      "name": "Video status"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate video').item.json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        32
+      ],
+      "id": "6dfc7134-1410-4a2b-abe6-b976447eaa66",
+      "name": "Get the video",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BUYuOe8V0hqLtA02",
+          "name": "fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.images[0].url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1184,
+        32
+      ],
+      "id": "dd316ead-9651-49df-b297-6a2b072456f0",
+      "name": "Download the video"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Convert video+image to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert video+image to base64": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Generate video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Generate video": {
+      "main": [
+        [
+          {
+            "node": "Wait for video generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for video generation": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get status of the video generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Get status of the video generation": {
+      "main": [
+        [
+          {
+            "node": "Video status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video status": {
+      "main": [
+        [
+          {
+            "node": "Get the video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for video generation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for video generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the video": {
+      "main": [
+        [
+          {
+            "node": "Download the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8036694f-25d3-4954-9bc8-9a69b2fec685",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "cjHzpZmoaFMBqKxJ",
+  "tags": []
+}

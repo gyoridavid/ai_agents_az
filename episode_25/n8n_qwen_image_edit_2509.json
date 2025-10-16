@@ -1,0 +1,436 @@
+{
+  "name": "Qwen image edit 2509",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Use Qwen image edit 2509",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Images",
+              "fieldType": "file",
+              "acceptFileTypes": ".png,.jpg,.avif,.webp",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Prompt",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Image size",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "portrait_16_9"
+                  },
+                  {
+                    "option": "landscape_16_9"
+                  },
+                  {
+                    "option": "portrait_4_3"
+                  },
+                  {
+                    "option": "landscape_4_3"
+                  },
+                  {
+                    "option": "square"
+                  },
+                  {
+                    "option": "square_hd"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Negative prompt",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -576,
+        0
+      ],
+      "id": "fcfa843a-449a-42f2-9e8e-770b7b179056",
+      "name": "On form submission",
+      "webhookId": "60425abe-e885-428c-931b-def03e4badd3"
+    },
+    {
+      "parameters": {
+        "content": "# Generate image",
+        "height": 288,
+        "width": 1172,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -80
+      ],
+      "id": "554bcb5c-d699-4f0e-86a1-8855a843cde5",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.images[0].url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        32
+      ],
+      "id": "63cd255e-ec17-45e9-a45e-025df49c98e2",
+      "name": "Download the image"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/qwen-image-edit-plus",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n  \"prompt\": $json.prompt,\n  \"image_size\": $json.image_size,\n  \"num_inference_steps\": 50,\n  \"guidance_scale\": 4,\n  \"num_images\": 1,\n  \"image_urls\": $json.files,\n  \"negative_prompt\": $json.negative_prompt,\n}, null, 2)\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "53c455c5-a8a0-4e07-8f46-b91dd30ee211",
+      "name": "⚠️ Generate image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BUYuOe8V0hqLtA02",
+          "name": "fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "069b700d-99ad-4170-ade6-636801b68bf0",
+      "name": "Wait for image generation",
+      "webhookId": "c2af0d99-26e3-43ab-84fd-62b58465d2cd"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate image').item.json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        -16
+      ],
+      "id": "254ff5f0-bd17-4f5f-99bd-ffc6058ea512",
+      "name": "⚠️ Get status of the image generation",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BUYuOe8V0hqLtA02",
+          "name": "fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "COMPLETED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6fc5bea4-1567-474b-bfca-5394eb303217"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COMPLETED"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0882f634-2472-4d24-a1c3-a39f0cd94855",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_PROGRESS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e6c8b207-13ac-4537-8c5c-677039bc2fef",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_QUEUE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_QUEUE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        -16
+      ],
+      "id": "980bb88f-d46e-4afc-bbde-b1c4d450a0e3",
+      "name": "Image status"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate image').item.json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        32
+      ],
+      "id": "d55bca9d-ddd1-4335-93a6-b910cde16def",
+      "name": "Get the image",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "BUYuOe8V0hqLtA02",
+          "name": "fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const file in $input.first().binary) {\n  try {\n    const bin = $input.first().binary[file];\n    const binBuffer = await this.helpers.getBinaryDataBuffer(0, file);\n\n    const path = bin.directory\n      ? `${bin.directory}/${bin.fileName}`\n      : bin.fileName;\n\n    results.push(`data:${bin.mimeType};base64,` + Buffer.from(binBuffer).toString('base64'));\n  } catch (error) {\n    console.error(`Error processing file \"${file}\": ${error.message}`);\n  }\n}\n\nreturn [{\n  json: {\n    files: results, \n    prompt:$input.first().json.Prompt,\n    negative_prompt: $input.first().json['Negative prompt'] || '',\n    image_size: $input.first().json['Image size']\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "218f0e3a-b1c2-4dc2-a07a-2d602b781cd6",
+      "name": "Convert images to base64"
+    },
+    {
+      "parameters": {
+        "content": "# Download",
+        "height": 288,
+        "width": 276,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -80
+      ],
+      "id": "be147505-acb8-46f4-a685-61bd54991f4d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Prepare data",
+        "height": 288,
+        "width": 276,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -80
+      ],
+      "id": "1f2c56d8-fa7b-4969-beed-5354cd40d6db",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Premium AI video generation community!](https://www.skool.com/ai-agents-az/about)\n\n## Create videos and build passive income on YouTube",
+        "height": 156,
+        "width": 1484,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -272
+      ],
+      "id": "6f950cad-64da-4da6-af77-78efed9363d0",
+      "name": "Sticky Note16"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Convert images to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Generate image": {
+      "main": [
+        [
+          {
+            "node": "Wait for image generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for image generation": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get status of the image generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Get status of the image generation": {
+      "main": [
+        [
+          {
+            "node": "Image status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image status": {
+      "main": [
+        [
+          {
+            "node": "Get the image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for image generation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for image generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the image": {
+      "main": [
+        [
+          {
+            "node": "Download the image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert images to base64": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Generate image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c0fd9ef1-9ed8-4a3c-a046-743bf2b5b4f6",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "Jov3lktZ49j7LjA4",
+  "tags": []
+}

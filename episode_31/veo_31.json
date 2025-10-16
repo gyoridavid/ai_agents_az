@@ -1,0 +1,462 @@
+{
+  "name": "Veo 3.1",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Create video using Veo 3.1",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "prompt",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resolution",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "720p"
+                  },
+                  {
+                    "option": "1080p"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Aspect ratio",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "16:9"
+                  },
+                  {
+                    "option": "9:16"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Video duration (seconds)",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "4"
+                  },
+                  {
+                    "option": "6"
+                  },
+                  {
+                    "option": "8"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Start image",
+              "fieldType": "file",
+              "multipleFiles": false
+            },
+            {
+              "fieldLabel": "End image",
+              "fieldType": "file",
+              "multipleFiles": false
+            },
+            {
+              "fieldLabel": "Generate audio",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Generate audio"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -480,
+        240
+      ],
+      "id": "58d7a073-418f-4a6d-8139-dcc81b33cede",
+      "name": "On form submission",
+      "webhookId": "056622a7-8752-4a57-aefb-603af43766da"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = {};\n\nfor (const file in $input.first().binary) {\n  try {\n    const bin = $input.first().binary[file];\n    const binBuffer = await this.helpers.getBinaryDataBuffer(0, file);\n\n    const path = bin.directory\n      ? `${bin.directory}/${bin.fileName}`\n      : bin.fileName;\n\n    results[file] = {\n      data: Buffer.from(binBuffer).toString('base64'),\n      mime: bin.mimeType,\n    };\n  } catch (error) {\n    console.error(`Error processing file \"${file}\": ${error.message}`);\n  }\n}\n\nreturn [{\n  json: {\n    files: results,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        240
+      ],
+      "id": "5cccb52d-efa0-491d-bdc7-8aa6329d5a0a",
+      "name": "Convert images to base64"
+    },
+    {
+      "parameters": {
+        "content": "# Configure me",
+        "height": 352,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "8e718074-4807-4523-9395-b32588b5ef05",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e9fbe2d-6636-4df2-8054-811f855d376d",
+              "name": "PROJECT_ID",
+              "value": "<<add your project id here>>",
+              "type": "string"
+            },
+            {
+              "id": "1e65c4b0-c7c0-4876-a710-0b720931e3f6",
+              "name": "LOCATION_ID",
+              "value": "us-central1",
+              "type": "string"
+            },
+            {
+              "id": "0bef756a-6e2a-434f-9f42-ff4a74a1de64",
+              "name": "API_ENDPOINT",
+              "value": "us-central1-aiplatform.googleapis.com",
+              "type": "string"
+            },
+            {
+              "id": "30431164-1a3f-4194-92aa-5c966bd87e54",
+              "name": "MODEL_ID",
+              "value": "veo-3.1-generate-preview",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        240
+      ],
+      "id": "0df2ab0a-1d55-4647-b113-c9e2f93159e0",
+      "name": "Configure me"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc5846c-f85a-49d8-9e31-00a77714332f",
+              "name": "URL",
+              "value": "=https://{{ $json.API_ENDPOINT }}/v1/projects/{{ $json.PROJECT_ID }}/locations/{{ $json.LOCATION_ID }}/publishers/google/models/{{ $json.MODEL_ID }}:predictLongRunning",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        240
+      ],
+      "id": "b2cddaff-e680-4278-b58f-40700c42d5d8",
+      "name": "Setup workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $('Configure me').item.json.API_ENDPOINT }}/v1/projects/{{ $('Configure me').item.json.PROJECT_ID }}/locations/{{ $('Configure me').item.json.LOCATION_ID }}/publishers/google/models/{{ $('Configure me').item.json.MODEL_ID }}:fetchPredictOperation",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"operationName\": $('Start generating the video').first().json.name\n}, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "29b00c88-0749-459f-bb20-1d2242764d8d",
+      "name": "Get the status of the generation",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Y58EiorQxBVC7D3s",
+          "name": "Together AI"
+        },
+        "googleOAuth2Api": {
+          "id": "gqjs2rxPPrzlaDcw",
+          "name": "Google account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "5de4dcc5-afd1-49ab-aa0e-c2c6ecf247e1",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.done }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7b57aeb7-e8d0-4708-81f1-c071085fb41f",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1248,
+        240
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.URL }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n    endpoint: `projects/${$('Configure me').item.json.PROJECT_ID}/locations/${$('Configure me').item.json.LOCATION_ID}/publishers/google/models/${$('Configure me').item.json.MODEL_ID}`,\n    instances: [\n        {\n            prompt: $('On form submission').item.json.prompt,\n            image: $('Convert images to base64').item.json.files['Start_image'] ? {\n              \"bytesBase64Encoded\": $('Convert images to base64').item.json.files['Start_image'].data,\n              \"mimeType\": $('Convert images to base64').item.json.files['Start_image'].mime\n            } : undefined,\n            \"lastFrame\": $('Convert images to base64').item.json.files['End_image'] ? {\n              \"bytesBase64Encoded\": $('Convert images to base64').item.json.files['End_image'].data,\n              \"mimeType\": $('Convert images to base64').item.json.files['End_image'].mime\n            } : undefined,\n        }\n    ],\n    parameters: {\n        aspectRatio: $('On form submission').item.json['Aspect ratio'],\n        sampleCount: 1,\n        // negativePrompt: \"\",\n        // enhancePrompt: true,\n        // compressionQuality: \"optimized\",\n        durationSeconds: $('On form submission').item.json['Video duration (seconds)'],\n        personGeneration: \"allow_all\",\n        addWatermark: true,\n        includeRaiReason: true,\n        generateAudio: $('On form submission').item.json['Generate audio'].some(item => item === 'Generate audio'),\n        resolution: $('On form submission').item.json.Resolution,\n    }\n}, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        544,
+        240
+      ],
+      "id": "29668dd6-3e25-4a74-adc3-53434c58c5ce",
+      "name": "Start generating the video",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "mAlc7q2DqJmGe72x",
+          "name": "Google vertex"
+        },
+        "googleOAuth2Api": {
+          "id": "gqjs2rxPPrzlaDcw",
+          "name": "Google account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "response.videos[0].bytesBase64Encoded",
+        "options": {}
+      },
+      "id": "6f9c245d-f857-478b-bfec-297511c57c11",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        1760,
+        224
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        240
+      ],
+      "id": "837029ba-119a-4895-aee1-b598563d1b74",
+      "name": "Initial wait",
+      "webhookId": "973ad659-e1ca-4daf-b6f6-bf6242cb4be2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1504,
+        416
+      ],
+      "id": "c1843d67-e4cf-46e7-9c14-239c85f28593",
+      "name": "Wait before polling again",
+      "webhookId": "d68106f3-971c-47b6-8800-e02a3e273b8c"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Convert images to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert images to base64": {
+      "main": [
+        [
+          {
+            "node": "Configure me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure me": {
+      "main": [
+        [
+          {
+            "node": "Setup workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup workflow": {
+      "main": [
+        [
+          {
+            "node": "Start generating the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the status of the generation": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait before polling again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start generating the video": {
+      "main": [
+        [
+          {
+            "node": "Initial wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initial wait": {
+      "main": [
+        [
+          {
+            "node": "Get the status of the generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait before polling again": {
+      "main": [
+        [
+          {
+            "node": "Initial wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b525164-15de-4691-9581-6f649eca19e0",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "7NBDSgWh8e313CdP",
+  "tags": []
+}

@@ -28,6 +28,8 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 22: Sleep long-form videos with GPT-5, ElevenMusic, Imagen4, Seendance and n8n](episode_22)
 - [Episode 23: UGC videos with nanobanana and n8n](episode_23)
 - [Episode 24: generate images with Qwen Image, Flux.1 [dev] and Flux.1 Schnell with modal.com and Cloudflare Workers AI](episode_24)
+- [Episode 25: Fal.ai n8n subworkflows for Qwen Image Edit Plus and Wan 2.2 animate](episode_25)
+- [Episode 31: Veo 3.1 is now in n8n - how to use it for FREE](episode_31)
 
 ## servers
 
