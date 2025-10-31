@@ -10,7 +10,7 @@ Create your own AI influencers with this free n8n workflow. It uses fal.ai's Veo
 
 - [n8n workflow: influencer machine](workflow-influencer-machine.json)
 - [n8n subWorkflow: fal.ai Veo 3.1](subworkflow-fal-veo31.json)
-- [SubWorkflow: fal.ai nanobanana](subworkflow-fal-nanobanana.json)
+- [n8n subWorkflow: fal.ai nanobanana](subworkflow-fal-nanobanana.json)
 
 ## Instructions
 
