@@ -2459,7 +2459,7 @@
     },
     {
       "parameters": {
-        "content": "# How to set up this automation?\n\n## 0. Make sure you are using n8n 1.118.1+\n## 1. Follow the YouTube video and create the databases\n## 2. Setup the database ids in the configure me node (see the YouTube video)\n## 3. Download and import the subworkflows (links in the YouTube video's description or on GitHub). Setup the subworkflows (add your credential)]\n## 5. Select the LLM you want to use and connect it to the AI nodes. Disable the rest of the LLM providers\n## 6. Setup the Facebook Graph nodes, add your token (see the guide on how to create it and connect your Instagram account)\n## 4. Done! 🎉\n\n# Resources:\n\n## [Guide to connect Facebook](https://github.com/gyoridavid/ai_agents_az/blob/main/episode_8/guide-instagram.md)",
+        "content": "# How to set up this automation?\n\n## 0. Make sure you are using n8n 1.118.1+\n## 1. Follow the YouTube video and create the databases\n## 2. Setup the database ids in the configure me node (see the YouTube video)\n## 3. Download and import the subworkflows (links in the YouTube video's description or on GitHub). Setup the subworkflows (add your credential)]\n## 5. Select the LLM you want to use and connect it to the AI nodes. Disable the rest of the LLM providers\n## 6. Setup the Facebook Graph nodes, add your token (see the guide on how to create it and connect your Instagram account)\n## 4. Done! 🎉\n\n# Resources:\n\n## [Watch the video](https://www.youtube.com/watch?v=PjXYr6M4fjY)\n## [Guide to connect Facebook](https://github.com/gyoridavid/ai_agents_az/blob/main/episode_8/guide-instagram.md)\n## [GitHub](https://github.com/gyoridavid/ai_agents_az/tree/main/episode_35)",
         "height": 788,
         "width": 1220,
         "color": 6
@@ -3616,7 +3616,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "599257a6-c7e4-4ea9-85ae-a80ea5df11be",
+  "versionId": "74c9dc3a-b292-45eb-91cc-5211aa206f42",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
