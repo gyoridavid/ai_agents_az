@@ -1,0 +1,1329 @@
+{
+  "name": "Viral bodycam shorts creator",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -688,
+        720
+      ],
+      "id": "6ad09135-7bdd-4e54-89bd-81c3f0a21fb3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tGvJRP2th9CbI2oq",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"video_prompt\": \"\",\n    \"video_title\": \"\",\n    \"video_description\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1024,
+        272
+      ],
+      "id": "0d97b14a-96dc-46fb-ad95-49225ccfec40",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "errorMessage": "=Error while generating the video: {{ $json.message || data.failMsg }}"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        816,
+        0
+      ],
+      "id": "2df02a65-533e-4fb0-a18e-ec9dc7ee1f68",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "defd1dcb-4c75-47bc-83c4-bb29f6d1b1fd",
+              "name": "task_id",
+              "value": "={{ $json.data.taskId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        160
+      ],
+      "id": "54e5d491-6258-43b2-8fbc-4b8ca10c4c28",
+      "name": "Set task id"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        336
+      ],
+      "id": "2b504a0e-057f-4f44-b55d-b942b4289925",
+      "name": "Wait",
+      "webhookId": "be790b26-e203-4695-859f-01bca4cbef18"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c335417b-f320-4f9b-a5c8-48d7b6e8f0e6",
+              "leftValue": "={{ $json.code }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        64
+      ],
+      "id": "9b7ed9e6-a96d-4e89-a5da-2b984efc17cf",
+      "name": "Successful start?"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<Instructions>\n  Create a prompt for an AI video creator for a viral short video. Use the templates below to create an extremely funny bodycam footage. Use imaginary or real characters, hilarious vihicles.\n  Make sure not to use copyrighted materials, like spider-man or sponge bob.\n\n  {{ $json.Instructions }}\n</Instructions>\n\n<Templates>\n  <Template>\n    Body cam footage of a police officer catching {Character} stealing {Item} in a supermarket. {Character} runs away with the police officer trying to chase on foot\n  </Template>\n  <Template>\n    Realistic body cam footage of a police officer pulling over {Character} in his {Vihicle}. It was a serious offense, so the cop is extremely angry and tries to open the door of the car before {character} speeds away quickly.\n  </Template>\n  <Template>\n    Body cam footage of a police officer pulling over a car with {Character} as a driver. After being questioned, {Character} drives away with the police officer trying to chase on foot.\n  </Template>\n  <Template>\n    Bodycam footage of {Character} {Vihicle} fleeing from a traffic stop\"\n  </Template>\n</Templates>\n\n{{ $json.change_requests ? `\nThe post was already generated, please apply the change requests\n\n<VideoTitle>\n${$json.video_title}\n</VideoTitle>\n\n<VideoPrompt>\n${$json.video_prompt}\n</VideoPrompt>\n\n<ChangeRequests>\n${$json.change_requests}\n</ChangeRequests>\n` : '' }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1216,
+        80
+      ],
+      "id": "fdb47bc9-9bc2-4438-ba79-4bd99ba381c0",
+      "name": "Create video prompt"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $('Set task id').item.json.task_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        400,
+        160
+      ],
+      "id": "ff1d37e5-2e60-4102-862d-d81d7a3b32e1",
+      "name": "Get status of the video",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "I9h2snlZscr2WStA",
+          "name": "Kie"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4b32c886-1289-402c-9288-e565b03b4d05",
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "fail",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fail"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b6b8b96b-ed7c-4df8-9d11-bc0d6cbceb6b",
+                    "leftValue": "={{ $json.data.state }}",
+                    "rightValue": "success",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ ['waiting', 'queuing', 'generating'].includes($json.data.state) }}",
+                    "rightValue": "waiting",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "e08c646f-f98d-458a-8d27-ff73e48b2c00"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "waiting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        608,
+        144
+      ],
+      "id": "2f4493f2-c4f2-41f4-a79e-ba8692afa8b3",
+      "name": "Route based on the status"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "=<< insert your instagram business id >>",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "video_url",
+                "value": "={{ $('Setup video url').last().json.video_url }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Create video prompt').last().json.output.video_title }}\n\n{{ $('Create video prompt').last().json.output.video_description }}"
+              },
+              {
+                "name": "media_type",
+                "value": "VIDEO"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        384
+      ],
+      "id": "3018ebf1-ca73-4fc1-a00c-087678e96e58",
+      "name": "Upload video to Instagram",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "6QYA8nXTfX9mWQr4",
+          "name": "Facebook Graph account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "=<< insert your instagram business id >>",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        384
+      ],
+      "id": "fc50a923-e73f-45a9-a93f-ae15c8fa502b",
+      "name": "Post video post to Instagram",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "6QYA8nXTfX9mWQr4",
+          "name": "Facebook Graph account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Upload to YouTube\n\n⚠️ set the credentials in the `Start Youtube upload` and the `Upload video to YouTube` nodes",
+        "height": 360,
+        "width": 688,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        -224
+      ],
+      "id": "303e7809-199b-4293-ab01-0542e6b67d82",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/youtube/v3/videos?part=snippet,status&uploadType=resumable",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Upload-Content-Type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "RAW/JSON",
+        "body": "={{ \n  JSON.stringify(\n    {\n      \"snippet\": {\n        title: $('Create video prompt').last().json.output.video_title,\n        description: $('Create video prompt').last().json.output.video_description,\n        tags: \"\",\n        categoryId: \"24\",\n        defaultLanguage: \"en\",\n        defaultAudioLanguage: \"en\"\n      },\n      status: {\n        privacyStatus: \"public\",\n        license: \"youtube\",\n        embeddable: true,\n        publicStatsViewable: true,\n        madeForKids: false\n      }\n    }\n  ) \n}}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "18dd7909-db38-487b-a3f0-a2a57fbc658c",
+      "name": "Start Youtube upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1632,
+        -96
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "EvIEz3KvgFMPW9Ap",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('Download the video1').item.json.headers.location }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "youTubeOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "f93b777d-8968-4c56-a2e0-9ebc52cfe50f",
+      "name": "Upload video to YouTube",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2080,
+        -96
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "EvIEz3KvgFMPW9Ap",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Setup video url').last().json.video_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1856,
+        -96
+      ],
+      "id": "7b97e11b-0169-4fa3-927a-ee84734b1b1b",
+      "name": "Download the video1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# OR use Postiz, Blotato etc.  to share on social media platforms",
+        "width": 1184
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        688
+      ],
+      "id": "e4de6cdb-48c5-4238-a090-78bb48c39038",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Post to instagram\n# [Guide to setup Facebook (Instagram)](https://github.com/gyoridavid/ai_agents_az/blob/main/episode_8/guide-instagram.md)",
+        "height": 372,
+        "width": 864,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        224
+      ],
+      "id": "67b92b22-6e64-4c92-b007-8e5779eb01ee",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "formTitle": "Sora 2 video maker",
+        "formDescription": "Create a viral body-cam footage video with Sora 2\n\nYou can add your instructions below, but make sure to avoid using copyrighted material",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Aspect ratio",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Landscape"
+                  },
+                  {
+                    "option": "Portrait"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Instructions",
+              "fieldType": "textarea",
+              "placeholder": "optional"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1552,
+        80
+      ],
+      "id": "3856b5d1-8294-4857-95d0-ad1451514141",
+      "name": "On form submission",
+      "webhookId": "c3be18f3-14a0-4581-8bf8-3c38fe03b3aa"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:32b",
+        "options": {
+          "numCtx": 16048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        720
+      ],
+      "id": "90a72554-941c-4a2d-a612-9b40c045b67c",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cWXUsJ0LsqnzOEx0",
+          "name": "Ollama account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        720
+      ],
+      "id": "0d63278b-fc7c-46c4-966a-8ae38e741631",
+      "name": "DeepSeek Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "tngtech/deepseek-r1t-chimera:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        1072
+      ],
+      "id": "d93317fc-c5ec-423e-b5cc-5fe6f271b665",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "pKxg2Rhtt3cG3h19",
+          "name": "OpenRouter account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        1072
+      ],
+      "id": "26f619fa-34b6-4a49-92dd-c3957147cdad",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "omtFgoCWQwibKrMM",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        880
+      ],
+      "id": "eae36daf-53b7-4fb6-8332-bd76a00dca80",
+      "name": "Azure OpenAI Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        880
+      ],
+      "id": "5fce93d2-d273-4c83-90a2-a1a268d5fe6f",
+      "name": "xAI Grok Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -832,
+        880
+      ],
+      "id": "48278246-6b42-4a42-9c46-a2e85c69fbf9",
+      "name": "Anthropic Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        880
+      ],
+      "id": "658340c9-488d-49bd-9540-0daa19d7c5c4",
+      "name": "xAI Grok Chat Model1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        1072
+      ],
+      "id": "42d30ada-b49b-4819-adf1-8d0db3bbb007",
+      "name": "Groq Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        720
+      ],
+      "id": "fc0c79e5-5418-4a13-81c6-e9b480108caf",
+      "name": "AWS Bedrock Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        1072
+      ],
+      "id": "4c25ef9c-52b5-4115-a1a6-6556b5aef52c",
+      "name": "Mistral Cloud Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Pick your choice of LLM ⚠️\n⚠️ Make sure to deactive/delete the rest of the LLMs after selecting one",
+        "height": 700,
+        "width": 700,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        592
+      ],
+      "id": "bf5dd603-3e22-45b3-a976-60360682f2ff",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about?w9)\n\n## Be part of a growing community and help us create more content like this\n\n## And get access to our premium workflows and our hosted GPU media server with voice cloning and video tools",
+        "height": 372,
+        "width": 908,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        -544
+      ],
+      "id": "d94a98ef-f124-48cd-bcc8-f927120a48b8",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "# How to set up this automation?\n\n## 0. Make sure you are using n8n 1.118.1+\n## 1. Setup your kie.ai API key in the `Start generating the video` and `Get status of the video` nodes\n## 2. Select the LLM you want to use and connect it to the AI nodes. Disable the rest of the LLM providers\n## 3. Setup the Facebook Graph nodes, add your token (see the guide on how to create it and connect your Instagram account)\n## 4. Setup your YouTube credentials\n## 5. Done! 🎉\n\n# Resources:\n\n## [Watch the video](https://www.youtube.com/watch?v=PjXYr6M4fjY)\n## [Guide to connect Facebook](https://github.com/gyoridavid/ai_agents_az/blob/main/episode_8/guide-instagram.md)\n## [GitHub](https://github.com/gyoridavid/ai_agents_az/tree/main/episode_36)",
+        "height": 580,
+        "width": 1748,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -736
+      ],
+      "id": "84c770e1-3dd3-4534-aed7-ebd0edf66d6f",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "If you selected no, what changes do you want to apply?",
+              "fieldType": "textarea",
+              "placeholder": "Be as thorough as possible"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the title:\n{{ $json.output.video_title }}\n\nHere's the description:\n{{ $json.output.video_description }}\n\nThis is the video prompt:\n{{ $json.output.video_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        -928,
+        80
+      ],
+      "id": "33f3094e-fcd4-4df5-8917-c09411365aef",
+      "name": "Video plan approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -736,
+        80
+      ],
+      "id": "3099f550-35e6-490f-8a7d-ae7ececba958",
+      "name": "Approve video plan?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6d99474-863d-4926-bbf6-6f8d96502ca4",
+              "name": "change_requests",
+              "value": "={{ $json['If you selected no, what changes do you want to apply?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "2b67b23c-bb56-4e31-adbf-3c5596098822",
+              "name": "video_prompt",
+              "value": "={{ $('Create video prompt').last().json.output.video_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "7cafc015-bb66-4ce4-9406-2d9485008430",
+              "name": "video_title",
+              "value": "={{ $('Create video prompt').last().json.output.video_title }}",
+              "type": "string"
+            },
+            {
+              "id": "13785ce7-7770-46bd-9a07-13a20c7f985d",
+              "name": "video_description",
+              "value": "={{ $('Create video prompt').last().json.output.video_description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        336
+      ],
+      "id": "35383b96-bdc4-4040-816a-443103d8ee5a",
+      "name": "Set video plan variables"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "If you selected no, what changes do you want to apply?",
+              "fieldType": "textarea",
+              "placeholder": "Be as thorough as possible"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Video title: {{ $('Create video prompt').last().json.output.video_title }}\n\nVideo description: {{ $('Create video prompt').last().json.output.video_description }}\n\n\nHere's the generated video:\n<video width=\"100%\" controls>\n  <source src=\"{{ $json.video_url }}\" type=\"video/mp4\">\n  Your browser does not support the video tag.\n</video>\n\n\nVideo prompt:\n{{ $('Create video prompt').last().json.output.video_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        992,
+        160
+      ],
+      "id": "5e4ae939-2f5a-4561-9dc0-63c3cb9010db",
+      "name": "Video approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        160
+      ],
+      "id": "b3145a6d-a74a-40c0-9f98-27cf6eb7602d",
+      "name": "Approve video?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ef1a380-6eec-4fa2-bdd0-b90209606b44",
+              "name": "change_requests",
+              "value": "={{ $json['If you selected no, what changes do you want to apply?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6ab73f03-24e1-40be-8a98-3148546f18d6",
+              "name": "video_prompt",
+              "value": "={{ $('Create video prompt').last().json.output.video_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "c992075b-eb82-4868-b4a7-24f250cc66ac",
+              "name": "video_title",
+              "value": "={{ $('Create video prompt').last().json.output.video_title }}",
+              "type": "string"
+            },
+            {
+              "id": "00a1eb18-1d86-4c01-8ba6-5eaacdd47154",
+              "name": "video_description",
+              "value": "={{ $('Create video prompt').last().json.output.video_description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        336
+      ],
+      "id": "11c06f33-f731-4a4a-8560-38dad87f2910",
+      "name": "Video variables"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const result = JSON.parse($json.data.resultJson);\n$input.item.json.video_url = result.resultUrls[0];\n$input.item.json.video_watermark_url = result.resultWaterMarkUrls[0];\n\nreturn $input.item;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        160
+      ],
+      "id": "4cad7431-36b5-45cc-8464-7b47f7170aa1",
+      "name": "Setup video url"
+    },
+    {
+      "parameters": {
+        "content": "# Create plan for the video",
+        "height": 608,
+        "width": 912
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        -96
+      ],
+      "id": "288588d8-37aa-4d4d-92b0-5d067486ed2e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Generate the video",
+        "height": 608,
+        "width": 1760
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -96
+      ],
+      "id": "ef945da0-ea6a-4987-8474-087dbbf148cd",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n\n  JSON.stringify({\n  \"model\": \"sora-2-text-to-video\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": $('Create video prompt').last().json.output.video_prompt,\n    \"aspect_ratio\": $('On form submission').first().json['Aspect ratio'].toLowerCase(),\n    \"n_frames\": \"10\",\n    \"remove_watermark\": true\n  }\n}, null, 2)\n\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -208,
+        64
+      ],
+      "id": "0a681b13-4796-4d1b-8c24-1855d0199942",
+      "name": "Start generating the video",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "I9h2snlZscr2WStA",
+          "name": "Kie"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create video prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Create video prompt",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set task id": {
+      "main": [
+        [
+          {
+            "node": "Get status of the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get status of the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Successful start?": {
+      "main": [
+        [
+          {
+            "node": "Set task id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create video prompt": {
+      "main": [
+        [
+          {
+            "node": "Video plan approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get status of the video": {
+      "main": [
+        [
+          {
+            "node": "Route based on the status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route based on the status": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Setup video url",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload video to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Post video post to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Youtube upload": {
+      "main": [
+        [
+          {
+            "node": "Download the video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download the video1": {
+      "main": [
+        [
+          {
+            "node": "Upload video to YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Create video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video plan approval": {
+      "main": [
+        [
+          {
+            "node": "Approve video plan?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve video plan?": {
+      "main": [
+        [
+          {
+            "node": "Start generating the video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set video plan variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set video plan variables": {
+      "main": [
+        [
+          {
+            "node": "Create video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video approval": {
+      "main": [
+        [
+          {
+            "node": "Approve video?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve video?": {
+      "main": [
+        [
+          {
+            "node": "Upload video to Instagram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Start Youtube upload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Video variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video variables": {
+      "main": [
+        [
+          {
+            "node": "Create video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup video url": {
+      "main": [
+        [
+          {
+            "node": "Video approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start generating the video": {
+      "main": [
+        [
+          {
+            "node": "Successful start?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "898058de-24b1-4b7c-9256-7b8cf5996f50",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "rkLkxPsVzFqIw4z4",
+  "tags": []
+}
