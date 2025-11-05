@@ -1,4 +1,4 @@
-# Episode 36: Viral bodycam footage creator with Suno 2
+# Episode 36: Viral bodycam footage creator with Sora 2
 
 Viral bodycam videos have been around for a while, but Sora 2 took them to a whole new level. Want to get in on the action? Create your own AI bodycam shorts — shaky cam and all — with this easy n8n workflow.
 
@@ -8,7 +8,7 @@ Viral bodycam videos have been around for a while, but Sora 2 took them to a who
 
 ## Free n8n JSON workflow
 
-- [n8n workflow: Viral bodycam footage creator with Suno 2](n8n_viral_bodycam_footage_creator.json)
+- [n8n workflow: Viral bodycam footage creator with Sora 2](n8n_viral_bodycam_footage_creator.json)
 
 ## Additional resources
 
