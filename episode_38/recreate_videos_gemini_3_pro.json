@@ -1,0 +1,660 @@
+{
+  "name": "Gemini 3: recreate videos with veo3.1",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "acc5846c-f85a-49d8-9e31-00a77714332f",
+              "name": "VEO_VERTEX_URL",
+              "value": "=https://{{ $json.API_ENDPOINT }}/v1/projects/{{ $json.PROJECT_ID }}/locations/{{ $json.LOCATION_ID }}/publishers/google/models/{{ $json.MODEL_ID }}:predictLongRunning",
+              "type": "string"
+            },
+            {
+              "id": "5ad350ac-4659-40ba-ab65-7840e0eccd25",
+              "name": "VIDEO_ID",
+              "value": "={{ $('On form submission').item.json['Youtube video URL'].split('/').pop() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        704
+      ],
+      "id": "6470be7c-5892-4805-938a-d02f92e3e025",
+      "name": "Setup workflow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "5de4dcc5-afd1-49ab-aa0e-c2c6ecf247e1",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.done }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a7011412-0a5a-4ad4-9a27-a0ea60816909",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1600,
+        704
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "response.videos[0].bytesBase64Encoded",
+        "options": {}
+      },
+      "id": "9acf01b0-1363-412b-9003-39fcb32f1b26",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        2112,
+        688
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        832
+      ],
+      "id": "ec8278fb-fd78-4b8a-b789-44a52dee39cc",
+      "name": "Wait before polling again",
+      "webhookId": "24f2c6e1-08b0-4e44-99af-dbc507f97be7"
+    },
+    {
+      "parameters": {
+        "formTitle": "Clone shorts with Gemini 3 pro and Veo 3.1",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Youtube video URL",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Any change request to the video",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -560,
+        704
+      ],
+      "id": "c04638e9-eb4c-4390-878f-7ff3363b3f9c",
+      "name": "On form submission",
+      "webhookId": "31830116-16b0-40b2-ba3e-38894f45b801"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6e9fbe2d-6636-4df2-8054-811f855d376d",
+              "name": "PROJECT_ID",
+              "value": "<<inser your project id>>",
+              "type": "string"
+            },
+            {
+              "id": "1e65c4b0-c7c0-4876-a710-0b720931e3f6",
+              "name": "LOCATION_ID",
+              "value": "us-central1",
+              "type": "string"
+            },
+            {
+              "id": "0bef756a-6e2a-434f-9f42-ff4a74a1de64",
+              "name": "API_ENDPOINT",
+              "value": "us-central1-aiplatform.googleapis.com",
+              "type": "string"
+            },
+            {
+              "id": "30431164-1a3f-4194-92aa-5c966bd87e54",
+              "name": "MODEL_ID",
+              "value": "veo-3.1-generate-preview",
+              "type": "string"
+            },
+            {
+              "id": "ba2463e8-1673-43be-b7b2-0d43420c1ef3",
+              "name": "BASE_PROMPT",
+              "value": "=OBJECTIVE: Analyze the provided video and generate a frame-accurate reconstruction prompt for AI video models (Veo, Sora, etc.). Apply all change requests to every aspect of the manifest including dialogue, props, actions, and sounds. Output only the technical manifest—no preamble.\n\n═══════════════════════════════════════════════════════════\n\nPART 1: GLOBAL SPECIFICATIONS\n\nCAPTURE MEDIUM:\nIdentify sensor/film: [specific camera model or film stock]\nResolution: [e.g., 4K, 1080p]\nNative characteristics: [grain structure, noise pattern, sharpness profile]\n\nCOLOR & OPTICS:\n- Color grading: [specific adjustments—contrast ratios, lift/gamma/gain values, LUT characteristics]\n- White balance: [Kelvin temperature]\n- Lens profile: [manufacturer, focal length, aperture characteristics, optical aberrations, bokeh shape]\n\nPHYSICS ENGINE:\nDefine simulation fidelity for: lighting propagation, fluid dynamics, cloth/hair behavior, particle interactions, motion blur characteristics\n\n═══════════════════════════════════════════════════════════\n\nPART 2: OPENING FRAME COMPOSITION\n\nCRITICAL: This defines the exact starting state that the AI must generate.\n\nSPATIAL LAYOUT:\n[Describe camera's viewing axis and what architectural elements are visible]\n[e.g., \"Camera faces directly toward the front door. No side walls or railings are visible in frame. Only the door, doormat, and subject are present.\"]\n\nFRAME BOUNDARIES:\n- Left edge: [what's visible/cut off]\n- Right edge: [what's visible/cut off]\n- Top edge: [what's visible/cut off]\n- Bottom edge: [what's visible/cut off]\n\nSUBJECT PLACEMENT:\n[Exact position within frame using rule-of-thirds grid or percentage coordinates]\n\nBACKGROUND DEPTH:\n[What layers are visible behind the subject, in order from near to far]\n\n═══════════════════════════════════════════════════════════\n\nPART 3: SHOT-BY-SHOT BREAKDOWN\n\nFor each shot, provide:\n\n[SHOT N] | START: X.Xs | END: X.Xs\nAUDIO: [sound effects] + [spoken dialogue if present]\nNOTE: Ensure audio references match any modified props/actions from change requests\n\nCAMERA:\n- Frame: [shot size + composition]\n- Angle: [camera position relative to subject]  \n- Motion: [precise movement with timing, acceleration curves, stabilization type]\n- Focal length: [mm equivalent]\n- Focus: [subject in focus + DoF depth + any rack focus with exact timing]\n\nSUBJECT(S):\n[Forensic description: age, ethnicity, build, hair, skin texture, clothing materials/fit/condition, distinguishing features]\n\nACTION TIMELINE:\n0.0s: [initial state]\nX.Xs: [precise action with body mechanics]\nX.Xs: [micro-expressions, gesture endpoints]\n[Continue with 0.1s-0.5s precision]\n\nLIGHTING SCHEMATIC:\nKey: [position, intensity, color temp, diffusion]\nFill: [position, intensity, color temp]\nRim/Back: [position, intensity, color temp]\nAmbient: [quality, color, falloff]\n\nENVIRONMENT:\n[Visible elements with spatial positioning, textures, imperfections, atmospheric effects, background depth layers]\n\n═══════════════════════════════════════════════════════════\n\nCONSTRAINTS:\n- Use quantifiable metrics (degrees, seconds, Kelvin, f-stops, percentages)\n- Specify timing to 0.1s precision for critical moments\n- Describe colors with references (not just \"warm\" but \"2700K tungsten\")\n- Note all visible imperfections (scratches, wrinkles, asymmetries)\n- Document light-material interactions\n- CRITICAL: When change requests modify props/instruments/objects, update ALL references including dialogue, sound effects, and action descriptions\n- Define the opening frame composition with architectural precision to prevent unwanted elements appearing in frame\n\nOutput the manifest only. No commentary.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        704
+      ],
+      "id": "9a8f7044-3d48-4dc5-8fce-4d6982fa062c",
+      "name": "Configure me"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e31e1d0b-1ed1-4388-a021-1a184c1dcafe",
+              "name": "prompt",
+              "value": "=<Instructions>\n{{ $('Configure me').item.json.BASE_PROMPT }}\n</Instructions>\n\n<Context>\nVideo title: {{ $json.items[0].snippet.title }}\nVideo description: {{ $json.items[0].snippet.description }}\nVideo tags: {{ $json.items[0].snippet.tags.join(', ') }}\n</Context>\n\n{{ $('On form submission').item.json['Any change request to the video'] ? `\n<ChangeRequests>\n${$('On form submission').item.json['Any change request to the video']}\n</ChangeRequests>\n` : '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        704
+      ],
+      "id": "10c99838-45ad-4c58-a824-e6a572eb6baa",
+      "name": "Create prompt"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eccbeb92-af90-4244-8e23-2cd3e2616a07",
+              "name": "result",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        704
+      ],
+      "id": "00f26208-57e6-4c18-88fd-9b022700a919",
+      "name": "Set the video prompt"
+    },
+    {
+      "parameters": {
+        "content": "# Create the video",
+        "height": 448,
+        "width": 832,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1152,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "033d978d-7581-4955-9bcb-470044b2e428",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Ready",
+        "height": 448,
+        "width": 304,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2016,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "bd5337fa-b6b1-48b8-8f80-6d8d2dd2b415",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Configure",
+        "height": 448,
+        "width": 304,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -336,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "cc69beda-d301-4a56-b623-73ce458e1178",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Analyze video",
+        "height": 448,
+        "width": 1120,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "27cae1a1-dd4a-4aad-8f51-0ce0de303c28",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.VIDEO_ID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        256,
+        704
+      ],
+      "id": "a4386b0b-78f6-45b0-ac6c-76bbbef29b05",
+      "name": "⚠️ Get video data",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "3baXrUTXSZdYheY5",
+          "name": "Google API key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"fileData\": {\n            \"fileUri\": `https://www.youtube.com/watch?v=${$('Setup workflow').item.json.VIDEO_ID}`,\n            \"mimeType\": \"video/mp4\"\n          }\n        },\n        {\n          \"text\": $json.prompt\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.4,\n    \"topP\": 0.95,\n    \"maxOutputTokens\": 8192\n  }\n}, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        704
+      ],
+      "id": "e9527c80-9dab-4134-aa98-802e489565d6",
+      "name": "⚠️ Create video prompt",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "mAlc7q2DqJmGe72x",
+          "name": "Google vertex"
+        },
+        "googleOAuth2Api": {
+          "id": "eeDsYPbAg7TVtPFA",
+          "name": "Google account"
+        },
+        "httpHeaderAuth": {
+          "id": "cU08NKALg0AwqLkn",
+          "name": "Google AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup workflow').item.json.VEO_VERTEX_URL }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n    endpoint: `projects/${$('Configure me').item.json.PROJECT_ID}/locations/${$('Configure me').item.json.LOCATION_ID}/publishers/google/models/${$('Configure me').item.json.MODEL_ID}`,\n    instances: [\n        {\n            prompt: $json.result\n        }\n    ],\n    parameters: {\n        aspectRatio: '9:16',\n        sampleCount: 1,\n        // negativePrompt: \"\",\n        // enhancePrompt: true,\n        // compressionQuality: \"optimized\",\n        durationSeconds: 8,\n        personGeneration: \"allow_all\",\n        addWatermark: true,\n        includeRaiReason: true,\n        generateAudio: true,\n        resolution: '1080p',\n    }\n}, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1216,
+        704
+      ],
+      "id": "c81546dd-d459-4b18-8f91-7dcff00cff05",
+      "name": "⚠️ Start generating the video",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "mAlc7q2DqJmGe72x",
+          "name": "Google vertex"
+        },
+        "googleOAuth2Api": {
+          "id": "eeDsYPbAg7TVtPFA",
+          "name": "Google account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $('Configure me').item.json.API_ENDPOINT }}/v1/projects/{{ $('Configure me').item.json.PROJECT_ID }}/locations/{{ $('Configure me').item.json.LOCATION_ID }}/publishers/google/models/{{ $('Configure me').item.json.MODEL_ID }}:fetchPredictOperation",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  \"operationName\": $('⚠️ Start generating the video').first().json.name\n}, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1424,
+        704
+      ],
+      "id": "cfdbc07d-922e-4fbc-8cea-ea04aff9dcb8",
+      "name": "⚠️ Get the status of the generation",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Y58EiorQxBVC7D3s",
+          "name": "Together AI"
+        },
+        "googleOAuth2Api": {
+          "id": "eeDsYPbAg7TVtPFA",
+          "name": "Google account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about)\n\n## premium workflows\n## hosted GPU media server\n## voice cloning\n\n## Long-form video tools like \n### LoFi music video creator\n### Sleep video create",
+        "height": 452,
+        "width": 908,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        128
+      ],
+      "id": "d9f6df94-a25c-4213-ad20-3799c3a5d346",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "# How to set up this automation?\n\n## [Watch the tutorial video to understand the necessary steps](https://www.youtube.com/watch?v=PjXYr6M4fjY)\n\nScopes for the Gemini 3 pro integration: `https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/generative-language.retriever`",
+        "height": 212,
+        "width": 1716,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        608,
+        368
+      ],
+      "id": "170acd15-15b3-4629-a078-5252dbeb0482",
+      "name": "Sticky Note14"
+    }
+  ],
+  "pinData": {
+    "⚠️ Create video prompt": [
+      {
+        "json": {
+          "candidates": [
+            {
+              "content": {
+                "parts": [
+                  {
+                    "text": "PART 1: GLOBAL SPECIFICATIONS\n\nCAPTURE MEDIUM:\nIdentify sensor/film: 1/2.8\" CMOS Security Camera Sensor (Ring/Nest style)\nResolution: 1080p (High compression bitrate)\nNative characteristics: High ISO noise in shadows, digital sharpening artifacts, barrel distortion typical of wide-angle security lenses, slight motion ghosting.\n\nCOLOR & OPTICS:\n- Color grading: Night vision/Porch light aesthetic. High contrast. Deep blacks in background, blown-out highlights near the light source.\n- White balance: 2800K (Warm Tungsten)\n- Lens profile: Generic security wide-angle, ~2.5mm focal length, f/2.0 fixed aperture. Significant radial distortion at edges.\n\nPHYSICS ENGINE:\nSimulation fidelity:\n- Cloth: Heavy fleece robe movement.\n- Hair: Messy, unstyled hair physics reacting to sudden movement.\n- Rigid Body: Violin and bow rigidity; cat's anthropomorphic stance balance.\n- Lighting: Single point source falloff (inverse square law) from overhead porch light.\n\n═══════════════════════════════════════════════════════════\n\nPART 2: OPENING FRAME COMPOSITION\n\nSPATIAL LAYOUT:\nCamera is mounted high (approx 7ft), angled down at 30 degrees towards the porch floor. The composition is dominated by the wooden deck floorboards running horizontally. To the right, a white door frame and a dark green door. To the left, a white railing and darkness beyond.\n\nFRAME BOUNDARIES:\n- Left edge: White porch railing and night sky/trees (dark).\n- Right edge: House siding and door frame.\n- Top edge: Porch ceiling and overhead light fixture (source of flare).\n- Bottom edge: Porch floorboards, doormat.\n\nSUBJECT PLACEMENT:\nSubject (Cat) is centered horizontally, positioned on the lower third line, standing on hind legs on the doormat.\n\nBACKGROUND DEPTH:\n1. Foreground: Cat and Violin.\n2. Mid-ground: Doormat, Door, Porch Railing.\n3. Background: Dark yard, distant streetlights (bokeh orbs), rocking chair on porch (left).\n\n═══════════════════════════════════════════════════════════\n\nPART 3: SHOT-BY-SHOT BREAKDOWN\n\n[SHOT 1] | START: 0.0s | END: 10.0s\nAUDIO: [SFX: Screechy, discordant violin bowing sounds] + [0.0s-2.1s] -> [SFX: Door latch clicking, door swinging open violently] -> [Dialogue: Woman yelling \"Hey! Hey! Stop that! It's midnight, hand it over.\"] -> [Dialogue: \"No sir, no more violin tonight, got it?\"] -> [Dialogue: \"Inside with this thing. Go home.\"]\nNOTE: Drumming sounds replaced with violin screeching. \"Drumming\" in dialogue replaced with \"Violin\".\n\nCAMERA:\n- Frame: Wide Shot (Security Camera fixed angle).\n- Angle: High-angle looking down.\n- Motion: Static (fixed mount).\n- Focal length: ~14mm equivalent (Fisheye).\n- Focus: Fixed infinity focus (everything from 2ft to infinity is sharp).\n\nSUBJECT(S):\n1.  **Cat:** Adult Tabby, grey/brown stripes. Standing bipedal. Wearing a small strap/harness holding a miniature wooden violin against its left shoulder. Right paw holds a violin bow.\n2.  **Woman:** Late 20s/Early 30s, Caucasian, long wavy brown hair (messy). Wearing a blue fleece bathrobe. Barefoot/slippers.\n\nACTION TIMELINE:\n0.0s: Cat is standing on hind legs. Left paw holds the neck of the violin. Right paw moves the bow back and forth rapidly across the strings.\n1.5s: Cat continues playing; head bobs to the rhythm of the screeching music.\n2.1s: The door on the right swings open abruptly outward/towards camera.\n2.3s: Woman steps out aggressively, looking down at the cat.\n2.8s: Woman bends down and grabs the violin by the neck/body.\n3.2s: Woman pulls the violin away from the cat. The cat's paws linger in the air briefly.\n4.0s: Woman stands upright, holding the violin in her left hand, pointing a finger at the cat with her right hand.\n5.5s: Woman scolds the cat: \"No sir, no more violin tonight, got it?\"\n7.0s: Woman gestures with the violin towards the door (\"Inside with this thing\").\n8.5s: Woman makes a shooing motion with her free hand towards the stairs/camera left.\n9.5s: Cat drops to all fours and scampers off-screen left.\n\nLIGHTING SCHEMATIC:\nKey: Overhead porch light (top center of frame), 2800K, hard shadows cast directly downward.\nFill: Bounce light from the white siding and door, low intensity.\nRim: None.\nAmbient: Pitch black night background, minimal moonlight (5500K) visible in far distance.\n\nENVIRONMENT:\nWooden porch decking with linear grooves. A rectangular brown doormat with a decorative border. White vinyl siding on the house. A white rocking chair visible in the background left. The night sky is black with digital noise. Reflections of the porch light visible on the glass storm door before it opens.",
+                    "thoughtSignature": "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"
+                  }
+                ],
+                "role": "model"
+              },
+              "finishReason": "STOP",
+              "index": 0
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 2029,
+            "candidatesTokenCount": 1206,
+            "totalTokenCount": 4658,
+            "cachedContentTokenCount": 1895,
+            "promptTokensDetails": [
+              {
+                "modality": "VIDEO",
+                "tokenCount": 910
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 1119
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "VIDEO",
+                "tokenCount": 850
+              },
+              {
+                "modality": "TEXT",
+                "tokenCount": 1045
+              }
+            ],
+            "thoughtsTokenCount": 1423
+          },
+          "modelVersion": "gemini-3-pro-preview",
+          "responseId": "KeAcaZLrC4XlvdIPwJX1gAk"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Setup workflow": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get video data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait before polling again",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait before polling again": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get the status of the generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configure me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure me": {
+      "main": [
+        [
+          {
+            "node": "Setup workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create prompt": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Create video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set the video prompt": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Start generating the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Get video data": {
+      "main": [
+        [
+          {
+            "node": "Create prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Create video prompt": {
+      "main": [
+        [
+          {
+            "node": "Set the video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Start generating the video": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get the status of the generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Get the status of the generation": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c174dcec-0d71-420d-a017-3c91e4a78501",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "xwXmHi3GGaopO6gg",
+  "tags": []
+}
