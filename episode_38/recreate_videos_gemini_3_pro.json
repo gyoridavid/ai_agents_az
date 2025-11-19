@@ -433,7 +433,7 @@
     },
     {
       "parameters": {
-        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about)\n\n## premium workflows\n## hosted GPU media server\n## voice cloning\n\n## Long-form video tools like \n### LoFi music video creator\n### Sleep video create",
+        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about)\n\n## premium workflows\n## hosted GPU media server\n## voice cloning\n\n## Long-form video tools like \n### LoFi music video creator\n### Sleep video creator\n### Explainer video creator (chill dude explains)",
         "height": 452,
         "width": 908,
         "color": 6
@@ -650,7 +650,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "c174dcec-0d71-420d-a017-3c91e4a78501",
+  "versionId": "28a23751-d413-4847-b01d-9dfa786c5883",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
