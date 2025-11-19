@@ -449,7 +449,7 @@
     },
     {
       "parameters": {
-        "content": "# How to set up this automation?\n\n## [Watch the tutorial video to understand the necessary steps](https://www.youtube.com/watch?v=PjXYr6M4fjY)\n\nScopes for the Gemini 3 pro integration: `https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/generative-language.retriever`",
+        "content": "# How to set up this automation?\n\n## [Watch the tutorial video to understand the necessary steps](https://www.youtube.com/watch?v=zNk9FdJo0vg)\n\nScopes for the Gemini 3 pro integration: `https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/generative-language.retriever`",
         "height": 212,
         "width": 1716,
         "color": 6
@@ -650,7 +650,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "28a23751-d413-4847-b01d-9dfa786c5883",
+  "versionId": "fcbb7af8-cfe6-4dd1-9df7-bd09561b1149",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"

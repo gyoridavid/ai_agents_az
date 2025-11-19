@@ -17,4 +17,4 @@ Google finally dropped Gemini 3, and we decided to put its superpowers to a crea
 
 ## Watch the video
 
-[![Gemini 3 recreates YouTube shorts in n8n (Veo 3.1) - free workflow](https://img.youtube.com/vi/a31WGoFGbOA/0.jpg)](https://www.youtube.com/watch?v=a31WGoFGbOA)
+[![Gemini 3 recreates YouTube shorts in n8n (Veo 3.1) - free workflow](https://img.youtube.com/vi/zNk9FdJo0vg/0.jpg)](https://www.youtube.com/watch?v=zNk9FdJo0vg)
