@@ -1,0 +1,1250 @@
+{
+  "name": "Infographics with NanoBanana Pro",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -1552,
+        384
+      ],
+      "id": "2848b178-981e-4d48-b18f-3e9b8bfca532",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tGvJRP2th9CbI2oq",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Create an infographic using Nano Banana Pro",
+        "formDescription": "It includes post title, body and the infographic",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Concept / instructions",
+              "fieldType": "textarea",
+              "placeholder": "Include as many details as you want",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -2304,
+        16
+      ],
+      "id": "2bc998ec-0583-46c6-8aa2-fc18e6c659ae",
+      "name": "On form submission",
+      "webhookId": "92342be6-c875-4bc9-88d6-300e65f6a51a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d7aee94-81c6-4be5-97ac-616474c6f2e9",
+              "name": "GOOGLE_CUSTOM_SEARCH",
+              "value": "<<insert your search id here>>",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2016,
+        16
+      ],
+      "id": "59176e28-7e9d-46cd-baeb-6cd299e3f59d",
+      "name": "Configure me"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.search_terms",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        16
+      ],
+      "id": "038d1de4-17c6-480f-ac43-b57d36ae02fa",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        -1344,
+        688
+      ],
+      "id": "7ef7dd41-a878-4566-a410-4c3cf329be47",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"infographic_instructions\": {\n      \"concept_and_instructions\": \"the concept and the instructions for the infographic\",\n      \"relevant_data\": \"include all the relevant data, but only the data.\"\n    },\n    \"post_title\": \"\",\n    \"post_body\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1200,
+        688
+      ],
+      "id": "da2832bb-c7cd-4384-a0fa-ed7d0c09d500",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f18c5b4b-03df-4d1c-970b-1c3c4385dfb0",
+              "leftValue": "={{ $json['Approve?'] }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -960,
+        400
+      ],
+      "id": "03735d0c-bc6a-45e0-80d0-9bd33f6feadd",
+      "name": "approve?"
+    },
+    {
+      "parameters": {
+        "text": "=Create a concept for an infographic based on the following instructions:\n\n{{ $('On form submission').item.json['Concept / instructions'] }}\n\nReturn the concept and 2-3 search terms that I can use on google to find data on the subject. The concept should describe how the infographic will present the data we find during the research.\nThe current date is {{ $now.toUTC() }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n\t\"concept\": \"\",\n    \"search_terms\": [\"\"]\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -1728,
+        16
+      ],
+      "id": "78a5591c-c58a-4472-be3f-e2bf768f74af",
+      "name": "Create main concept and search terms",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const urls = [];\n\nfor (const item of $input.all()) {\n  for (result of item.json.items) {\n    urls.push(result.link);\n  }\n}\n\nreturn [{\n  json: {\n    urls\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1008,
+        16
+      ],
+      "id": "7ad5b901-77f9-41ab-9ebf-c07d04ef7dae",
+      "name": "Collect URLs"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "urls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        16
+      ],
+      "id": "07a172d5-de84-460d-a835-c0cacbbbc86a",
+      "name": "For each URL"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.urls }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -672,
+        16
+      ],
+      "id": "1ad0527c-b783-401f-ae54-48d37d5a4673",
+      "name": "Scrape URL",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = [];\nfor (const item of $input.all()) {\n  if (!item.json.error) {\n    data.push(item.json.data)\n  }\n}\n\nreturn [{\n  json: {\n    data\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        16
+      ],
+      "id": "af727f86-1099-43e1-8139-a35017160a1d",
+      "name": "Collect results"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        16
+      ],
+      "id": "9426b833-4392-4a13-a382-ad6820fba784",
+      "name": "For each result"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "data",
+              "cssSelector": "body"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        16
+      ],
+      "id": "11611fdd-74b8-470a-adb4-1053427122a5",
+      "name": "Extract body"
+    },
+    {
+      "parameters": {
+        "text": "=I've scraped this HTML page to collect information for this infographic concept: `{{ $('On form submission').first().json['Concept / instructions'] }}`\n\nExtract the relevant data for me.",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n\t\"data_for_infographics\": \"\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        16
+      ],
+      "id": "2aa8ef30-ac41-48ec-b546-19fd4c271d59",
+      "name": "Summarize relevant data",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output.data_for_infographics",
+              "renameField": true,
+              "outputFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        176,
+        48
+      ],
+      "id": "647c1e45-f17e-4dad-8c83-3dc61efa6612",
+      "name": "Aggregate relevant data"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<Instructions>\nHelp me to write a post title, body and detailed instructions for an AI image about `{{ $('On form submission').first().json['Concept / instructions'] }}`. The post will be share on LinkedIn and Twitter/X.\n\nThe title should be short, and clickbaity.\n\nThe description should have a hook in the first sentence.\n\nThe AI image instructions should\n\n1. Contain the concept of the infographic - it should show the data clearly, as simple as possible, and represent it in a visually creative way where possible. For instance, if it's an infographic about wine consumption, the data could use wine bottles or glasses as part of the representation. All the instructions of the infographic goes to this field.\n• Limit your color palette to three colors max for a clean, cohesive look\n• Stick to one or two typefaces — one for titles and another for body text (or the same typeface in different weights)\n• Keep text concise with short, scannable sentences for easy readability\n• Maintain a consistent icon style to create a visually harmonious design\n\n2. Contain the relevant data that will be sent to the image model that will use it to generate the final artifact. Use the scraped data from the context. Make sure the data field ONLY contains the data - nothing else.\n</Instructions>\n\n<ScrapedData>\n{{ $('Aggregate relevant data').last().json.data.map(item => `<Data>\n${item}\n</Data>`).join('\\n') }}\n</ScrapedData>\n\n{{ $json.change_request ? `\n\nThe concept was already created, please help me to make the following changes.\n\n<concept>\n${$json.concept}\n</concept>\n\n<postTitle>\n${$json.post_title}\n</postTitle>\n\n<postBody>\n${$json.post_body}\n</postBody>\n\n<changeRequest>\n${$json.change_request}\n</changeRequest>\n` : '' }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1344,
+        400
+      ],
+      "id": "3f366395-3d15-4c3d-8ba9-f70371ca81f5",
+      "name": "Create post",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "yes"
+                  },
+                  {
+                    "option": "no"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Change request",
+              "fieldType": "textarea",
+              "placeholder": "if you don't approve, define why / what to change"
+            }
+          ]
+        },
+        "options": {
+          "formTitle": "Approve prompt",
+          "formDescription": "=Created the concept:\n{{ $json.output.infographic_instructions.concept_and_instructions }}\n\nPost title:\n{{ $json.output.post_title }}\n\nPost body:\n{{ $json.output.post_body }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        -1088,
+        400
+      ],
+      "id": "5d63ad32-52e7-4df0-ab6f-ca0e00c70f35",
+      "name": "Approve post",
+      "webhookId": "61e251af-1c10-44ff-885e-d4df4f2edbc1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "34e968dc-bc02-4f9a-b403-c319c344d01d",
+              "name": "concept",
+              "value": "={{ $('Create post').last().json.output.infographic_instructions.concept_and_instructions }}",
+              "type": "string"
+            },
+            {
+              "id": "674ddef6-8043-4875-afb3-030bcb8773d6",
+              "name": "post_title",
+              "value": "={{ $('Create post').last().json.output.post_title }}",
+              "type": "string"
+            },
+            {
+              "id": "59c7b031-621c-4965-b04a-8eab0e0a5734",
+              "name": "post_body",
+              "value": "={{ $('Create post').last().json.output.post_body }}",
+              "type": "string"
+            },
+            {
+              "id": "6c9f1ce3-70ed-485b-ae89-2de9d82dff5f",
+              "name": "change_request",
+              "value": "={{ $('Approve post').last().json['Change request'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        432
+      ],
+      "id": "24353099-6057-4cae-9772-5bea8cfc6bb6",
+      "name": "Set change requests"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about?w9)\n\n## Be part of a growing community and help us create more content like this\n\n## And get access to our premium workflows and our hosted GPU media server with voice cloning and video tools",
+        "height": 372,
+        "width": 908,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2096,
+        -528
+      ],
+      "id": "db9dc824-db7b-4b54-8100-a8d5af7e71f8",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "# How to set up this automation?\n\n## 0. Make sure you are using n8n 1.120.4+\n## 1. Create a Google Programmable Search Engine, copy the engine id and set it in the configure me node\n## 2. Create an API key in Google Console and set it in the `Search Google` node\n## 3. Enable the necessary APIs in Google Console and setup Oauth `https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/generative-language.retriever https://www.googleapis.com/auth/generative-language.tuning` scopes\n## 4. Add the Oauth connection to the `Generate image` node\n## 5. Select the LLM chat model of your choice and connect it to the LLM nodes. Disable the rest.\n## 6. Done! 🎉\n\n## Keep in mind, that with the Programmable Search Engine you have 100 free searches every day\n\n# Resources:\n\n## [Watch the video](https://youtu.be/bj67GH4wdxQ)\n## [Google Programmable API](https://programmablesearchengine.google.com/)\n## [Google Console](https://console.cloud.google.com/apis/credentials)",
+        "height": 756,
+        "width": 1476,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        -912
+      ],
+      "id": "a8dcbfce-6182-46be-8947-9602dde90b16",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:32b",
+        "options": {
+          "numCtx": 16048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -2048,
+        384
+      ],
+      "id": "daa7c85b-d7bf-40d1-b19e-304fbfa3c6b5",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cWXUsJ0LsqnzOEx0",
+          "name": "Ollama account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        384
+      ],
+      "id": "55b7e876-7a07-423e-bdcd-681a3cf82fe5",
+      "name": "DeepSeek Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "tngtech/deepseek-r1t-chimera:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        736
+      ],
+      "id": "b44af80b-4ad4-4032-9ff2-de0e6ccf504a",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "pKxg2Rhtt3cG3h19",
+          "name": "OpenRouter account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2048,
+        736
+      ],
+      "id": "79045d74-3c0f-4fdc-81a8-bf32079cc5cd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "omtFgoCWQwibKrMM",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -2048,
+        544
+      ],
+      "id": "08a356dd-313b-4f2c-8965-0c39ccae17cf",
+      "name": "Azure OpenAI Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        544
+      ],
+      "id": "f03f1fd0-c528-4d00-99db-ea5e15bf76ad",
+      "name": "xAI Grok Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1712,
+        544
+      ],
+      "id": "544c99b6-4f25-4597-a601-ab2334de04bf",
+      "name": "Anthropic Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        544
+      ],
+      "id": "eafe5644-3465-4ea5-a614-71aaeb0a5633",
+      "name": "xAI Grok Chat Model1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        736
+      ],
+      "id": "18f0d0e6-68e3-4e36-9265-16515856a78b",
+      "name": "Groq Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        384
+      ],
+      "id": "f5fe90f0-f6a6-481a-8cd0-2c89f2b0db25",
+      "name": "AWS Bedrock Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -1872,
+        736
+      ],
+      "id": "bf8c412d-61d1-4e18-9721-1acfef495453",
+      "name": "Mistral Cloud Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Pick your choice of LLM ⚠️\n⚠️ Make sure to deactive/delete the rest of the LLMs after selecting one",
+        "height": 700,
+        "width": 668,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2096,
+        256
+      ],
+      "id": "341edc69-968d-4192-9965-75a8cd7619bc",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# Configure me",
+        "height": 352,
+        "width": 256,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2096,
+        -128
+      ],
+      "id": "e5a1b7cf-9eab-49e8-855e-2519dcfbbcb9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Create main concept",
+        "height": 352,
+        "width": 368,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        -128
+      ],
+      "id": "cb7cbe79-b630-4ea8-8c25-87a3a3262bf3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Gather research",
+        "height": 352,
+        "width": 1728,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        -128
+      ],
+      "id": "4d325c83-92f6-461c-9b71-c490dd374243",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/customsearch/v1",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "cx",
+              "value": "={{ $('Configure me').item.json.GOOGLE_CUSTOM_SEARCH }}"
+            },
+            {
+              "name": "q",
+              "value": "={{ $('Split Out').item.json['output.search_terms'] }}"
+            },
+            {
+              "name": "num",
+              "value": "3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1184,
+        16
+      ],
+      "id": "adb5d01f-d1f7-42db-b1a0-2efc5f5d7029",
+      "name": "⚠️ Search Google",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "wUu1oUwsiQo4r8IF",
+          "name": "Google API key (search)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n    contents: [\n      {\n        parts: [\n          {\n            text: `${$('Create post').last().json.output.infographic_instructions.concept_and_instructions}\n\nData:\n${$('Create post').last().json.output.infographic_instructions.relevant_data}`\n          }\n        ]\n      }\n    ],\n    tools: [\n      {\n        google_search: {}\n      }\n    ],\n    generationConfig: {\n      responseModalities: [\"TEXT\", \"IMAGE\"],\n      imageConfig: {\"aspectRatio\": \"1:1\", \"imageSize\": \"1K\"}\n    }\n  }, null, 2) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -544,
+        416
+      ],
+      "id": "ff151342-3315-4769-99bb-679aa0e82333",
+      "name": "⚠️ Generate image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "cU08NKALg0AwqLkn",
+          "name": "Google AI"
+        },
+        "googleOAuth2Api": {
+          "id": "yye2CN6lCJNGJ6oO",
+          "name": "Google (Gemini)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Gather research",
+        "height": 352,
+        "width": 736,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        256
+      ],
+      "id": "e4ded374-85cb-4c07-9fc2-a10f8213b59a",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Generate image\n\nIf you want, add a base64 -> file converter, and share the image on different platforms",
+        "height": 352,
+        "width": 944,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        256
+      ],
+      "id": "28d24a8a-dc67-4474-9811-e8b739891c8a",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 208,
+        "width": 336,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        640
+      ],
+      "id": "2e798b75-8b8a-40d3-a3dd-7337def31751",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "yes"
+                  },
+                  {
+                    "option": "fully recreate from prompt"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the image\n\n<img src=\"data:image/png;base64,{{ $json.candidates[0].content.parts[0].inlineData.data }}\" alt=\"\" width=\"100%\" />"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        -368,
+        416
+      ],
+      "id": "2d18388b-a19b-4248-8496-a2d9e4e88efc",
+      "name": "Approve image",
+      "webhookId": "6f72b574-22da-479f-a915-2d94d559b12b"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Approve?'] }}",
+                    "rightValue": "yes",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "fa14b71b-9b23-4efe-88ad-dc6ec9d53fe0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Approved"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "515837bc-2dd6-4f02-abd9-376ab34ba541",
+                    "leftValue": "={{ $json['Approve?'] }}",
+                    "rightValue": "fully recreate from prompt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Recreate"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -208,
+        416
+      ],
+      "id": "8e9d0ae0-9c7d-4d59-95ec-4de1fcec1652",
+      "name": "Route"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64_image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        400
+      ],
+      "id": "a6352cd5-2481-4b3a-a7af-0ff114f460af",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "68baaa3b-c042-4d77-8cd6-921be13c52f3",
+              "name": "base64_image",
+              "value": "={{ $('⚠️ Generate image').last().json.candidates[0].content.parts[0].inlineData.data }}",
+              "type": "string"
+            },
+            {
+              "id": "6ea79868-7f7d-4264-b0ce-a3fe58d449a8",
+              "name": "title",
+              "value": "={{ $('Create post').last().json.output.post_title }}",
+              "type": "string"
+            },
+            {
+              "id": "20734ee0-34d9-4f39-be3b-abd784c128f7",
+              "name": "body",
+              "value": "={{ $('Create post').last().json.output.post_body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        400
+      ],
+      "id": "80beb88e-7f73-4b0c-9dd6-b5dad590b46c",
+      "name": "Final data"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize relevant data",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Create post",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Create main concept and search terms",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configure me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure me": {
+      "main": [
+        [
+          {
+            "node": "Create main concept and search terms",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Search Google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Create post",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Create post",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "approve?": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Generate image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set change requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create main concept and search terms": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect URLs": {
+      "main": [
+        [
+          {
+            "node": "For each URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For each URL": {
+      "main": [
+        [
+          {
+            "node": "Scrape URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape URL": {
+      "main": [
+        [
+          {
+            "node": "Collect results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Collect results": {
+      "main": [
+        [
+          {
+            "node": "For each result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "For each result": {
+      "main": [
+        [
+          {
+            "node": "Extract body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract body": {
+      "main": [
+        [
+          {
+            "node": "Summarize relevant data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize relevant data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate relevant data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate relevant data": {
+      "main": [
+        [
+          {
+            "node": "Create post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create post": {
+      "main": [
+        [
+          {
+            "node": "Approve post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve post": {
+      "main": [
+        [
+          {
+            "node": "approve?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set change requests": {
+      "main": [
+        [
+          {
+            "node": "Create post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Search Google": {
+      "main": [
+        [
+          {
+            "node": "Collect URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Generate image": {
+      "main": [
+        [
+          {
+            "node": "Approve image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve image": {
+      "main": [
+        [
+          {
+            "node": "Route",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route": {
+      "main": [
+        [
+          {
+            "node": "Final data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final data": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "xAI Grok Chat Model1": {
+      "ai_languageModel": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1fc76aed-f5be-412b-ac12-7bc74f43bd89",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "liGfY9zm0Kri8x0M",
+  "tags": []
+}

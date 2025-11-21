@@ -33,6 +33,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 35: Instagram influencer machine](episode_35)
 - [Episode 36: Viral bodycam footage creator with Sora 2](episode_36)
 - [Episode 38: Create AI reaction videos with Veo 3.1 and n8n](episode_38)
+- [Episode 39: Create infographics with Nano Banana Pro in n8n](episode_39)
 
 ## servers
 
