@@ -1,0 +1,498 @@
+{
+  "name": "Test Flux.2[dev]",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Testing Flux.2[dev]",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Which model would you like to try?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Flux.2[dev] on Cloudflare (text to image)"
+                  },
+                  {
+                    "option": "Flux.2[dev] on Fal.ai (image to image)"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        -16
+      ],
+      "id": "3e810985-ed7e-488c-873e-6295cd2c3fca",
+      "name": "On form submission",
+      "webhookId": "edad4a97-783d-49c6-805f-7e103a577f18"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Which model would you like to try?'] }}",
+                    "rightValue": "Flex.2[dev] on Fal.ai (image to image)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "defa6e48-6baf-497b-a4c1-960987412c25"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fal.ai"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "290b74a1-c538-480b-b0d9-67a888ab8559",
+                    "leftValue": "={{ $json['Which model would you like to try?'] }}",
+                    "rightValue": "Flux.2[dev] on Cloudflare (text to image)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cloudflare"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -256,
+        -16
+      ],
+      "id": "942a24f1-5691-473e-86bb-b4322517f899",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Images",
+              "fieldType": "file",
+              "acceptFileTypes": ".jpg,.png",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "prompt",
+              "fieldType": "textarea",
+              "placeholder": "you can reference the images in your prompt",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Aspect ratio",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "square_hd"
+                  },
+                  {
+                    "option": "square"
+                  },
+                  {
+                    "option": "portrait_4_3"
+                  },
+                  {
+                    "option": "portrait_16_9"
+                  },
+                  {
+                    "option": "landscape_4_3"
+                  },
+                  {
+                    "option": "landscape_16_9"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        -176
+      ],
+      "id": "a127cce7-4adf-4349-a060-049a4c956ffd",
+      "name": "Input for image edit",
+      "webhookId": "118e0602-a227-4544-8c6c-106677f50eba"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Image prompt",
+              "fieldType": "textarea",
+              "placeholder": "you image prompt",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        96
+      ],
+      "id": "12963f01-883c-4b99-ad01-f1fbf038e205",
+      "name": "Input for text to image",
+      "webhookId": "6e6a027b-be56-475c-ab6e-1c642cd8d57f"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const file in $input.first().binary) {\n  try {\n    const bin = $input.first().binary[file];\n    const binBuffer = await this.helpers.getBinaryDataBuffer(0, file);\n\n    const path = bin.directory\n      ? `${bin.directory}/${bin.fileName}`\n      : bin.fileName;\n\n    results.push(`data:${bin.mimeType};base64,` + Buffer.from(binBuffer).toString('base64'));\n  } catch (error) {\n    console.error(`Error processing file \"${file}\": ${error.message}`);\n  }\n}\n\nreturn [{\n  json: {\n    files: results,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -176
+      ],
+      "id": "ec7a01cf-55d9-412b-b91d-5be7cd13b92b",
+      "name": "Convert images to base64"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "The image is ready!",
+        "completionMessage": "=<img src=\"{{ $json.images[0].url }}\" alt=\"\" width=\"100%\" />",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        608,
+        -176
+      ],
+      "id": "b0ffcfe7-86b0-47d3-8f14-c9c93ad09fb1",
+      "name": "Image edit is done",
+      "webhookId": "d3637dd8-7059-4b6d-8efa-41fd56e55c22"
+    },
+    {
+      "parameters": {
+        "options": {
+          "formTitle": "Your image is ready",
+          "formDescription": "=<img src=\"data:image/png;base64,{{ $json.data }}\" width=\"100%\" alt=\"\" />",
+          "buttonLabel": "Close form"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        608,
+        96
+      ],
+      "id": "7dbe9937-d748-4031-a1d4-dc1d2f04f40d",
+      "name": "Text to image is done",
+      "webhookId": "d3637dd8-7059-4b6d-8efa-41fd56e55c22"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about)\n\n## premium workflows\n## hosted GPU media server\n## voice cloning\n\n## Long-form video tools like \n### LoFi music video creator\n### Sleep video create",
+        "height": 452,
+        "width": 1292,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -688
+      ],
+      "id": "f2b206e0-a315-4fd5-8ff1-607787390476",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        96
+      ],
+      "id": "fa5c46a5-8bbc-47ed-b247-6ea843a01884",
+      "name": "Convert image to base64"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "PCR4xcdLMGIsz1cT",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/PCR4xcdLMGIsz1cT",
+          "cachedResultName": "Fal.ai flux.2[dev] image edit subworkflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "image_urls": "={{ $json.files }}",
+            "prompt": "={{ $('Input for image edit').item.json.prompt }}",
+            "aspect_ratio": "={{ $('Input for image edit').item.json['Aspect ratio'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "prompt",
+              "displayName": "prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "image_urls",
+              "displayName": "image_urls",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "array",
+              "removed": false
+            },
+            {
+              "id": "aspect_ratio",
+              "displayName": "aspect_ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        -176
+      ],
+      "id": "8736f92d-e8a0-471d-9170-0e6c22e927a4",
+      "name": "Call 'Fal.ai flux.2[dev] image edit subworkflow'"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "2s0SYdaCPkUb5NmS",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/2s0SYdaCPkUb5NmS",
+          "cachedResultName": "Cloudflare Workers AI Flux.2[dev]"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "width": 1024,
+            "height": 768,
+            "prompt": "={{ $json['Image prompt'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "prompt",
+              "displayName": "prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "width",
+              "displayName": "width",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "height",
+              "displayName": "height",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        96
+      ],
+      "id": "36395b1e-2bf0-4139-b49b-98bc3a8ce9c8",
+      "name": "Call 'Cloudflare Workers AI Flux.2[dev]'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Input for image edit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Input for text to image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input for image edit": {
+      "main": [
+        [
+          {
+            "node": "Convert images to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert images to base64": {
+      "main": [
+        [
+          {
+            "node": "Call 'Fal.ai flux.2[dev] image edit subworkflow'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input for text to image": {
+      "main": [
+        [
+          {
+            "node": "Call 'Cloudflare Workers AI Flux.2[dev]'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert image to base64": {
+      "main": [
+        [
+          {
+            "node": "Text to image is done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Fal.ai flux.2[dev] image edit subworkflow'": {
+      "main": [
+        [
+          {
+            "node": "Image edit is done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Cloudflare Workers AI Flux.2[dev]'": {
+      "main": [
+        [
+          {
+            "node": "Convert image to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eb02eb8b-4426-42e8-bff7-05ad03507299",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "IhWGM7HQQIuhtjzz",
+  "tags": []
+}

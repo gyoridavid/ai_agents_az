@@ -1,0 +1,233 @@
+{
+  "name": "Cloudflare Workers AI Flux.2[dev]",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "result.image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        16
+      ],
+      "id": "b21a2b62-1884-4fa6-8624-69d93add3f9d",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "url": "https://api.cloudflare.com/client/v4/accounts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -224,
+        16
+      ],
+      "id": "dc4d5eb9-f53d-4f3a-b994-1ef29c3fad9f",
+      "name": "Get accounts",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "kqNEEhWZWQ3WxEaq",
+          "name": "Cloudflare AI workers"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            },
+            {
+              "name": "width",
+              "type": "number"
+            },
+            {
+              "name": "height",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -640,
+        16
+      ],
+      "id": "a26ab354-80b9-459d-906a-40329661e4fe",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f7d5020-0710-4f3c-858f-0485a2bd2963",
+              "name": "width",
+              "value": "={{ $json.width || 1024 }}",
+              "type": "number"
+            },
+            {
+              "id": "39b906fa-3e0b-45b9-9c1b-95cbc51e195d",
+              "name": "prompt",
+              "value": "={{ $json.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "3f8593d2-cfb3-437a-a9fc-4430995cb78f",
+              "name": "height",
+              "value": "={{ $json.height || 1024 }}",
+              "type": "number"
+            },
+            {
+              "id": "065181ef-404a-4860-9019-976e6e8391e0",
+              "name": "seed",
+              "value": "={{ Math.floor(Math.random() * 100000000) }}",
+              "type": "number"
+            },
+            {
+              "id": "2c131da3-e708-4468-bb09-d400e7e5f28c",
+              "name": "steps",
+              "value": 28,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -464,
+        16
+      ],
+      "id": "7877d477-4677-4c16-95a9-ffe07b21248a",
+      "name": "Setup workflow"
+    },
+    {
+      "parameters": {
+        "content": "# 🚨Add the CloudFlare API token, read this carefully\n\n### Go to your CloudFlare account -> Manage Account -> Account API tokens\n### Click on 'Create token'\n### Select the  the 'Workers AI' template\n### From the permissions, click on 'Add more'\n### Select 'Account Settings' and add 'Read' permissions\n### Click save and copy the token, add it as a bearer token to both HTTP nodes",
+        "height": 560,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -384
+      ],
+      "id": "ba8808e8-640e-4b9b-a4e7-d73c07268e03",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.cloudflare.com/client/v4/accounts/{{ $json.result[0].id }}/ai/run/@cf/black-forest-labs/flux-2-dev",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $('Setup workflow').item.json.prompt }}"
+            },
+            {
+              "name": "steps",
+              "value": "25"
+            },
+            {
+              "name": "width",
+              "value": "1024"
+            },
+            {
+              "name": "height",
+              "value": "768"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        16
+      ],
+      "id": "f95afb0f-e6f1-48ad-b608-6967e8d59f28",
+      "name": "Generate image",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "kqNEEhWZWQ3WxEaq",
+          "name": "Cloudflare AI workers"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get accounts": {
+      "main": [
+        [
+          {
+            "node": "Generate image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Setup workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup workflow": {
+      "main": [
+        [
+          {
+            "node": "Get accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate image": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90d65bf6-4731-4969-893b-b38f099c839e",
+  "meta": {
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "2s0SYdaCPkUb5NmS",
+  "tags": []
+}
