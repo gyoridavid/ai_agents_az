@@ -13,6 +13,7 @@ Alibaba dropped Z-Image-Turbo, a blazing-fast text-to-image model licensed under
 
 ## Additional resources
 
+- [Google Colab to run z-image-turbo](https://github.com/camenduru/Z-Image-jupyter?tab=readme-ov-file#-jupyter-notebook)
 - [Join n8n](https://n8n.partnerlinks.io/fenoo5ekqs1g)
 - [Z-Image-Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo)
 - [modal](https://modal.com/)
