@@ -1,0 +1,615 @@
+{
+  "name": "Explainer video - free",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Create an explainer video",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Content",
+              "fieldType": "textarea",
+              "placeholder": "the content the story shold be about",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Your modal server URL",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Extra context",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -2544,
+        -736
+      ],
+      "id": "60a9e22a-e84a-4525-b9d3-809b2c2716e9",
+      "name": "On form submission",
+      "webhookId": "290b488d-7e2e-4058-8e8b-8384186eaa88"
+    },
+    {
+      "parameters": {
+        "content": "# Create scenes",
+        "height": 560,
+        "width": 500,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1664,
+        -912
+      ],
+      "id": "879acaef-dd9f-4c48-b7e2-c6eb0373c900",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "content": "# Create the video",
+        "height": 560,
+        "width": 308,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1136,
+        -912
+      ],
+      "id": "fcf1b51a-8ab8-4279-a82f-3868bc505f70",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# How to set up this automation?\n\n## 0. Make sure you are on n8n 2.0+\n## 1. Start or deploy the modal server. On windows, use wsl2 with python3 and virtual environments installed.\n## 2. Select the LLM chat model of your choice and connect it to the LLM nodes. Disable the rest.\n## 3. Done! 🎉\n\n# Resources:\n\n## [modal.com](https://modal.com/)",
+        "height": 548,
+        "width": 548,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        -1488
+      ],
+      "id": "bca608b6-9674-4e96-92a8-d52db38a2692",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Join our Skool community for video automations, support, premium content and more!](https://www.skool.com/ai-agents-az/about?w9)\n\n## Be part of a growing community and help us create more content like this\n\n## And get access to our premium workflows and our hosted GPU media server with voice cloning and video tools",
+        "height": 372,
+        "width": 924,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2336,
+        -1312
+      ],
+      "id": "f22f7089-45f4-461d-b211-9e5dd17e47eb",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Setup defaults').first().json.MODAL_SERVER_URL }}/generate-video",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify([\n  {\n    \"scenes\": $json.scenes,\n    \"voice\": \"af_heart\",\n    \"tts_speed\": 1\n  }\n], null, 2) }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "maxRedirects": 999999999
+            }
+          },
+          "timeout": 999999999
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1040,
+        -752
+      ],
+      "id": "3db25655-0175-4df1-8da6-da4306f71f0b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.MODAL_SERVER_URL }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2096,
+        -736
+      ],
+      "id": "f2de421d-e3bb-4a2c-90d7-b82cba9dfcef",
+      "name": "HTTP Request",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "errorMessage": "The server is not running or isn't configured"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -2096,
+        -528
+      ],
+      "id": "1b0fcf0f-eb23-424b-9812-595e8d308ca4",
+      "name": "Server isn't ready"
+    },
+    {
+      "parameters": {
+        "content": "# Test connection",
+        "height": 560,
+        "width": 420,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2336,
+        -912
+      ],
+      "id": "3439eb5a-b630-4abc-a71a-0e8053d3c932",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d55d6da-a78c-4a28-9343-0ea9035a0aa3",
+              "name": "MODAL_SERVER_URL",
+              "value": "={{   ((u) => {   let s = u.trim();   if (!/^https?:\\/\\//i.test(s)) s = 'https://' + s;   const parts = s.split('/');   return parts[0] + '//' + parts[2]; })($json['Your modal server URL'])  }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2272,
+        -736
+      ],
+      "id": "02a33978-b9e4-4eec-b8e1-25523a47bbaf",
+      "name": "Setup defaults"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:32b",
+        "options": {
+          "numCtx": 16048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -2256,
+        -176
+      ],
+      "id": "446580ed-5f99-4f4d-ba5d-b3dd2056b9ec",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "cWXUsJ0LsqnzOEx0",
+          "name": "Ollama account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        -176
+      ],
+      "id": "c6e11c33-9ccb-4ad8-8d6e-d5d4e9658be8",
+      "name": "DeepSeek Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "tngtech/deepseek-r1t-chimera:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1792,
+        176
+      ],
+      "id": "b8c4934c-da42-4ea6-aef3-6be4d7b287e5",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "pKxg2Rhtt3cG3h19",
+          "name": "OpenRouter account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2256,
+        176
+      ],
+      "id": "aafb8a68-00f5-463f-93f7-00289da9a49a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "omtFgoCWQwibKrMM",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAzureOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -2256,
+        -16
+      ],
+      "id": "73dbd1c1-58f3-40e0-85fc-4341ba84d4d5",
+      "name": "Azure OpenAI Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        -16
+      ],
+      "id": "11933d2f-3415-45db-927a-51b038e71343",
+      "name": "xAI Grok Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -1920,
+        -16
+      ],
+      "id": "25e7951d-d353-4031-94cb-f2669fcf0b96",
+      "name": "Anthropic Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatXAiGrok",
+      "typeVersion": 1,
+      "position": [
+        -1792,
+        -16
+      ],
+      "id": "084a05f9-3f06-46a5-b67a-a8d4cba555b6",
+      "name": "xAI Grok Chat Model1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        176
+      ],
+      "id": "666f9760-2468-4d2e-a316-f10a924fb856",
+      "name": "Groq Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        -176
+      ],
+      "id": "5f3d24fe-aaf6-4278-a52b-3510fab6ecb9",
+      "name": "AWS Bedrock Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -2080,
+        176
+      ],
+      "id": "1184290e-c627-4779-901b-16b6ef5f4078",
+      "name": "Mistral Cloud Chat Model",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Pick your choice of LLM ⚠️\n⚠️ Make sure to deactive/delete the rest of the LLMs after selecting one",
+        "height": 700,
+        "width": 700,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2336,
+        -320
+      ],
+      "id": "49260eee-c048-47c6-a7a3-92165375c6d8",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {
+          "responseFormat": "json_object"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1776,
+        -176
+      ],
+      "id": "b5c2a699-b438-4077-98c0-a845396fb6d6",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "tGvJRP2th9CbI2oq",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"scenes\": {\n            \"type\": \"array\",\n            \"items\": {\n                \"type\": \"object\",\n                \"properties\": {\n                    \"narration\": {\n                        \"type\": \"string\"\n                    },\n                    \"image_prompt\": {\n                        \"type\": \"object\",\n                        \"properties\": {\n                            \"scene\": {\n                                \"type\": \"string\",\n                                \"description\": \"A brief summary of the overall action or moment depicted in the image — what is happening at a glance.\"\n                            },\n                            \"main_subject\": {\n                                \"type\": \"string\",\n                                \"description\": \"A description of the primary character or object in the scene, including identifying visual features.\"\n                            },\n                            \"action\": {\n                                \"type\": \"string\",\n                                \"description\": \"The movement or activity the main subject is performing, described in simple action terms.\"\n                            },\n                            \"environment\": {\n                                \"type\": \"string\",\n                                \"description\": \"The setting or location where the scene takes place, including notable background elements.\"\n                            },\n                            \"ground\": {\n                                \"type\": \"string\",\n                                \"description\": \"Specific details about the surface or terrain the character is interacting with or standing on.\"\n                            },\n                            \"camera\": {\n                                \"type\": \"string\",\n                                \"description\": \"Notes on the viewpoint or framing used (such as distance, angle, and composition relative to the subject).\"\n                            }\n                        },\n                        \"required\": [\n                            \"scene\",\n                            \"main_subject\",\n                            \"action\",\n                            \"environment\",\n                            \"ground\",\n                            \"camera\"\n                        ]\n                    }\n                },\n                \"required\": [\n                    \"narration\",\n                    \"image_prompt\"\n                ]\n            }\n        }\n    },\n    \"required\": [\n        \"scenes\"\n    ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1504,
+        -528
+      ],
+      "id": "c61adb8d-e4a3-4ba0-bb05-783bbaf4c1f0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<Instructions>\nHelp me to create scenes for an explainer style youtube video I'm creating. The video itself will have multiple scenes, where each scene will have an image and narration. The images will be generated using AI with the image prompt you create.\n\nTurn the content below into multiple, continous narration, clear text, without formatting. Make the stories exciting, and the reading level below 8th grade. Each scene should have one or two sentences at most. It should be very fast phasing.\n\nThe image prompt should contain the art style below, and make sure to create prompt that complements the narration and keeps the viewers attention.\n</Instructions>\n\n{{ $('On form submission').item.json['Extra context'] ? `\n<ExtraContext>\n${$('On form submission').item.json['Extra context']}\n</ExtraContext>\n` : '' }}\n\n<ArtStyle>\n{{ $('On form submission').item.json['Art style'] }}\n</ArtStyle>\n\n<Content>\n{{ $('On form submission').item.json.Content }}\n</Content>",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -1600,
+        -752
+      ],
+      "id": "23783e3e-19d8-4d81-a80a-6a625d421aaf",
+      "name": "Create scenes",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "content": "# Configure",
+        "height": 560,
+        "width": 196,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1888,
+        -912
+      ],
+      "id": "477bc20b-61c5-4218-baea-cedb90da6fd3",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.scenes = item.json.output.scenes.map(scene => {\n    return {\n      narration: scene.narration,\n      image_prompt: JSON.stringify({\n        style: $('Configuration').first().json.art_style,\n        content: scene.image_prompt\n      })\n    }\n  })\n  delete item.json.output\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        -752
+      ],
+      "id": "9d0bc635-6ea5-42a1-bbe6-b3509564ca35",
+      "name": "Add art style"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "48009df0-7759-4f31-a6d7-12b7f3875a56",
+              "name": "art_style",
+              "value": "={{\n  {\n    \"art_style\": \"2D hand-drawn animation\",\n    \"visual_style\": \"simple, flat colors, minimal shading, simple, hand-drawn pain-style drawing, imperfect, children-like\",\n    \"character_design\": \"stick figure with white circular head and simple facial features\",\n    \"background_style\": \"cartoon-like city street with plain wall and sidewalk\",\n    \"color_palette\": \"soft pastels and muted primary colors\",\n    \"mood\": \"light, playful, slightly comedic\"\n  }\n}}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1840,
+        -752
+      ],
+      "id": "61cfebf6-3053-416a-a82a-1445f1e68292",
+      "name": "Configuration"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Setup defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Server isn't ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup defaults": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create scenes",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Create scenes",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create scenes": {
+      "main": [
+        [
+          {
+            "node": "Add art style",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add art style": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Create scenes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3bc5bc26-496c-470e-baa4-28fc478b8d0b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "636db6b6ab21a21c6458e2137f340e33dc3e49f5a1c560c8d1e2372c227cf40e"
+  },
+  "id": "J7RS5zVq76QP0LJ2",
+  "tags": []
+}

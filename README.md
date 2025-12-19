@@ -36,6 +36,7 @@ In this repo, you can find the n8n templates we created for the episodes of [AI 
 - [Episode 39: Create infographics with Nano Banana Pro in n8n](episode_39)
 - [Episode 40: Flux.2[dev] with n8n](episode_40)
 - [Episode 41: FREE z-image-turbo with n8n](episode_41)
+- [Episode 42: 100% FREE explainer videos with n8n and Z-Image](episode_42)
 
 ## servers
 
