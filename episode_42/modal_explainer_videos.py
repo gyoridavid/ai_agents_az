@@ -6,6 +6,29 @@ import tempfile
 import os
 
 import modal
+from functools import wraps
+from time import time
+from collections import defaultdict
+
+# Rate limiter implementation
+class RateLimiter:
+    def __init__(self, max_requests=5, window_seconds=60):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self.requests = defaultdict(list)
+    
+    def is_allowed(self, identifier):
+        now = time()
+        # Clean old requests outside the window
+        self.requests[identifier] = [
+            req_time for req_time in self.requests[identifier]
+            if now - req_time < self.window_seconds
+        ]
+        
+        if len(self.requests[identifier]) < self.max_requests:
+            self.requests[identifier].append(now)
+            return True
+        return False
 
 image = (
     modal.Image.from_registry(
@@ -357,7 +380,7 @@ class ExplainerVideoGenerator:
                 # Concatenate all clips
                 try:
                     (
-                        ffmpeg.input(str(concat_file), format="concat", safe=0)
+                        ffmpeg.input(str(concat_file), format="concat")
                         .output(
                             str(final_video_path),
                             vcodec="libx264",
@@ -386,7 +409,21 @@ class ExplainerVideoGenerator:
 @app.function(image=image, volumes=volumes, cpu="0.5", memory="2GiB", timeout=30 * 60)
 @modal.wsgi_app()
 def flask_app():
+    import logging
+    import json
+    from datetime import datetime
+    
     web_app = Flask(__name__)
+    
+    # Configure structured logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    logger = logging.getLogger(__name__)
+    
+    # Initialize rate limiter
+    rate_limiter = RateLimiter(max_requests=5, window_seconds=60)
 
     @web_app.route("/")
     def health_check():
@@ -418,6 +455,16 @@ def flask_app():
         - **return_base64**: If true, returns base64 encoded video instead of binary (default: false)
         """
         try:
+            # Get client IP for rate limiting and logging
+            client_ip = request.remote_addr or request.headers.get("X-Forwarded-For", "unknown").split(",")[0].strip()
+            
+            # Check rate limit
+            if not rate_limiter.is_allowed(client_ip):
+                logger.warning(f"RATE_LIMIT_EXCEEDED - IP: {client_ip}, Timestamp: {datetime.utcnow().isoformat()}")
+                return jsonify({"error": "Rate limit exceeded. Maximum 5 requests per 60 seconds allowed."}), 429
+            
+            logger.info(f"VIDEO_GENERATION_REQUEST - IP: {client_ip}, Timestamp: {datetime.utcnow().isoformat()}")
+            
             data = request.get_json(force=True)
 
             # Handle array input format
@@ -457,9 +504,7 @@ def flask_app():
                         400,
                     )
 
-            print(f"Generating video with {len(scenes)} scenes...")
-            print(f"Voice: {voice}, TTS Speed: {tts_speed}")
-            print(f"Image dimensions: {image_width}x{image_height}")
+            logger.info(f"VIDEO_GENERATION_START - IP: {client_ip}, Scenes: {len(scenes)}, Voice: {voice}, TTS_Speed: {tts_speed}, Dimensions: {image_width}x{image_height}, Timestamp: {datetime.utcnow().isoformat()}")
 
             # Generate the video
             video_generator = ExplainerVideoGenerator()
@@ -471,6 +516,9 @@ def flask_app():
                 image_height=image_height,
             )
 
+            video_size_bytes = len(video_bytes)
+            logger.info(f"VIDEO_GENERATION_SUCCESS - IP: {client_ip}, Scenes: {len(scenes)}, Size_Bytes: {video_size_bytes}, Timestamp: {datetime.utcnow().isoformat()}")
+
             if return_base64:
                 # Return as base64 encoded string
                 video_base64 = base64.b64encode(video_bytes).decode("utf-8")
@@ -478,7 +526,7 @@ def flask_app():
                     {
                         "video": video_base64,
                         "format": "mp4",
-                        "size_bytes": len(video_bytes),
+                        "size_bytes": video_size_bytes,
                     }
                 )
             else:
@@ -493,8 +541,8 @@ def flask_app():
         except Exception as e:
             import traceback
 
-            print(f"Error generating video: {e}")
-            print(traceback.format_exc())
-            return jsonify({"error": str(e)}), 500
+            error_msg = str(e)
+            logger.error(f"VIDEO_GENERATION_ERROR - IP: {client_ip}, Error: {error_msg}, Traceback: {traceback.format_exc()}, Timestamp: {datetime.utcnow().isoformat()}")
+            return jsonify({"error": error_msg}), 500
 
     return web_app
